@@ -6,13 +6,13 @@ using Share.Data.Interfaces;
 
 namespace Share.Data
 {
-    public abstract class RepositoryBase<TEntity, TID>(TID? accountId) : IRepository<TEntity>
-        where TEntity : class
+    public abstract class RepositoryBase<TSchema, TID>(TID? accountId) : IRepository<TSchema>
+        where TSchema : class
         where TID : struct
     {
         TID? AccountId { get; } = accountId;
 
-        public void SetCreateAuditProperties(TEntity entity)
+        public void SetCreateAuditProperties(TSchema entity)
         {
             if (entity is ICreationAuditModel<TID> creationAuditModel)
             {
@@ -26,7 +26,7 @@ namespace Share.Data
             }
         }
 
-        public void SetUpdateAuditProperties(TEntity entity)
+        public void SetUpdateAuditProperties(TSchema entity)
         {
             if (entity is IModificationAuditModel<TID> modificationAuditModel)
             {
@@ -35,7 +35,7 @@ namespace Share.Data
             }
         }
 
-        public bool SetDeleteAuditProperties(TEntity entity)
+        public bool SetDeleteAuditProperties(TSchema entity)
         {
             if (entity is IDeletionAuditModel<TID> deletionAuditModel)
             {
@@ -49,14 +49,14 @@ namespace Share.Data
         }
 
 
-        public abstract IQueryable<TEntity> GetAll();
-        public abstract IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate);
-        public abstract IQueryable<TEntity> ApplyFilter(IQueryable<TEntity> source, string? filter);
-        public abstract TEntity Add(TEntity entity);
-        public abstract List<TEntity> AddRange(List<TEntity> entities);
-        public abstract TEntity Update(TEntity entity);
-        public abstract List<TEntity> UpdateRange(List<TEntity> entities);
-        public abstract TEntity Delete(TEntity entity);
-        public abstract List<TEntity> DeleteRange(List<TEntity> entities);
+        public abstract IQueryable<TSchema> GetAll();
+        public abstract IQueryable<TSchema> FindBy(Expression<Func<TSchema, bool>> predicate);
+        public abstract IQueryable<TSchema> ApplyFilter(IQueryable<TSchema> source, string? filter);
+        public abstract TSchema Add(TSchema entity);
+        public abstract List<TSchema> AddRange(List<TSchema> entities);
+        public abstract TSchema Update(TSchema entity);
+        public abstract List<TSchema> UpdateRange(List<TSchema> entities);
+        public abstract TSchema Delete(TSchema entity);
+        public abstract List<TSchema> DeleteRange(List<TSchema> entities);
     }
 }

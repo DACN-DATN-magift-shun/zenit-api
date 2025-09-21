@@ -6,52 +6,52 @@ using Share.Data.Interfaces;
 
 namespace Share.Business
 {
-    public abstract class DomainServiceBase<TEntity>(IRepository<TEntity> repository)
-        : IDomainService<TEntity> where TEntity : class
+    public abstract class DomainServiceBase<TSchema>(IRepository<TSchema> repository)
+        : IDomainService<TSchema> where TSchema : class
     {
-        public IRepository<TEntity> Repository { get; } = repository;
+        public IRepository<TSchema> Repository { get; } = repository;
 
-        public IQueryable<TEntity> GetAll()
+        public IQueryable<TSchema> GetAll()
         {
             return Repository.GetAll();
         }
 
-        public IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)
+        public IQueryable<TSchema> FindBy(Expression<Func<TSchema, bool>> predicate)
         {
             return Repository.FindBy(predicate);
         }
 
-        public IQueryable<TEntity> ApplyFilter(IQueryable<TEntity> source, string? filter)
+        public IQueryable<TSchema> ApplyFilter(IQueryable<TSchema> source, string? filter)
         {
             return Repository.ApplyFilter(source, filter);
         }
 
-        public TEntity Add(TEntity entity)
+        public TSchema Add(TSchema entity)
         {
             return Repository.Add(entity);
         }
 
-        public List<TEntity> AddRange(List<TEntity> entities)
+        public List<TSchema> AddRange(List<TSchema> entities)
         {
             return Repository.AddRange(entities);
         }
 
-        public TEntity Update(TEntity entity)
+        public TSchema Update(TSchema entity)
         {
             return Repository.Update(entity);
         }
 
-        public List<TEntity> UpdateRange(List<TEntity> entities)
+        public List<TSchema> UpdateRange(List<TSchema> entities)
         {
             return Repository.UpdateRange(entities);
         }
 
-        public TEntity Delete(TEntity entity)
+        public TSchema Delete(TSchema entity)
         {
             return Repository.Delete(entity);
         }
 
-        public List<TEntity> DeleteRange(List<TEntity> entities)
+        public List<TSchema> DeleteRange(List<TSchema> entities)
         {
             return Repository.DeleteRange(entities);
         }
