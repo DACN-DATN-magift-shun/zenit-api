@@ -3,9 +3,8 @@ using System;
 
 namespace Share.Data.Interfaces
 {
-    public interface ICreationAuditModel<TID> where TID : struct
+    public interface ICreationAuditModel
     {
-        TID? CreatedId { get; set; }
         DateTime CreatedAt { get; set; }
     }
 }

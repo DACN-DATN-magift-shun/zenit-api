@@ -1,0 +1,131 @@
+using Mapster;
+using MongoDB.Bson;
+
+using Accounts.Business.Managers;
+using Accounts.Contract.Requests;
+using Accounts.Data.Schemas;
+using Accounts.Contract.Errors;
+using Accounts.Business.Helpers;
+
+
+namespace Accounts.Business.Services
+{
+    public class AccountService(IServiceProvider serviceProvider) : AccountApplicationService(serviceProvider)
+    {
+        private AccountManager _AccountManager => GetService<AccountManager>();
+
+        public Task<AccountCreateResponse> Create(AccountCreateRequest request)
+        {
+            var existingAccount = _AccountManager.GetAll()
+                .FirstOrDefault(current => current.Email == request.Email);
+            if (existingAccount != null && existingAccount.IsDeleted == false)
+            {
+                throw new Exception(AccountErrors.ACCOUNT_ALREADY_EXISTS);
+            }
+
+            if (existingAccount != null && existingAccount.IsDeleted == true)
+            {
+                existingAccount.IsDeleted = false;
+                existingAccount.Username = request.Username;
+                existingAccount.Phone = request.Phone ?? "";
+                existingAccount.Address = request.Address ?? "";
+
+                var newSalt = Pbkdf2Helpers.GenerateSalt();
+                var newHashedPassword = Pbkdf2Helpers.HashPassword(request.Password, newSalt);
+                existingAccount.Password = newHashedPassword;
+
+                _AccountManager.Update(existingAccount);
+                return Task.FromResult(Mapper.Map<AccountCreateResponse>(existingAccount));
+            }
+
+            var salt = Pbkdf2Helpers.GenerateSalt();
+            var hashedPassword = Pbkdf2Helpers.HashPassword(request.Password, salt);
+            request.Password = hashedPassword;
+
+            var account = Mapper.Map<Account>(request);
+            _AccountManager.Add(account);
+            return Task.FromResult(Mapper.Map<AccountCreateResponse>(account));
+        }
+
+        public Task<AccountLoginResponse> Login(AccountLoginRequest request)
+        {
+            var account = _AccountManager.GetAll()
+                .FirstOrDefault(current => current.Email == request.Email)
+                ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+
+            var password = Convert.FromBase64String(account.Password);
+
+            var saltBytes = new byte[16];
+            var hashedPasswordBytes = new byte[32];
+            Array.Copy(password, 0, saltBytes, 0, 16);
+            Array.Copy(password, 16, hashedPasswordBytes, 0, 32);
+
+            // Hash input password với salt đã extract
+            var hashedInputPassword = Pbkdf2Helpers.HashPassword(request.Password, saltBytes);
+            var inputPasswordBytes = Convert.FromBase64String(hashedInputPassword);
+
+            // Extract chỉ phần hash (bỏ salt) để so sánh
+            var inputHashBytes = new byte[32];
+            Array.Copy(inputPasswordBytes, 16, inputHashBytes, 0, 32);
+
+            // So sánh 2 hash (không bao gồm salt)
+            bool isPasswordValid = true;
+            for (int i = 0; i < hashedPasswordBytes.Length; i++)
+            {
+                if (inputHashBytes[i] != hashedPasswordBytes[i])
+                {
+                    isPasswordValid = false;
+                }
+            }
+
+            if (!isPasswordValid)
+            {
+                throw new Exception(AccountErrors.WRONG_PASSWORD);
+            }
+
+            var tokens = JwtHelpers.GenerateJwtTokens(account);
+            return Task.FromResult(Mapper.Map<AccountLoginResponse>(tokens));
+        }
+
+        // public Task<AccountForgotPasswordRequest> ForgotPassword(AccountForgotPasswordRequest request)
+        // {
+        //     return Task.FromResult(request);
+        // }
+
+        // public Task<AccountResetPasswordResponse> ResetPassword(AccountResetPasswordRequest request)
+        // {
+        //     return Task.FromResult(new AccountResetPasswordResponse());
+        // }
+
+        public Task<AccountGetDetailResponse> GetDetail(AccountGetDetailRequest request)
+        {
+            var parsedId = ObjectId.Parse(request.Id);
+
+            var account = _AccountManager.FindBy(current => current.Id == parsedId).FirstOrDefault()
+                ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+
+            return Task.FromResult(Mapper.Map<AccountGetDetailResponse>(account));
+        }
+
+        public Task<AccountUpdateResponse> Update(AccountUpdateRequest request)
+        {
+
+            var account = _AccountManager.Update(Mapper.Map<Account>(request))
+                ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+
+            return Task.FromResult(Mapper.Map<AccountUpdateResponse>(account));
+        }
+
+        public Task Delete(AccountDeleteRequest request)
+        {
+            var account = _AccountManager.FindBy(current => current.Id.ToString() == request.Id).FirstOrDefault()
+                ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+
+            _AccountManager.Delete(account);
+
+            return Task.CompletedTask;
+        }
+
+        
+    }
+}

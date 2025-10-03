@@ -1,10 +1,10 @@
 namespace Share.Data.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IAsyncDisposable
     {
-        void SaveChanges();
-        void BeginTransaction();
-        void CommitTransaction();
-        void RollbackTransaction();
+        Task SaveChanges();
+        Task BeginTransaction();
+        Task CommitTransaction();
+        Task RollbackTransaction();
     }
 }

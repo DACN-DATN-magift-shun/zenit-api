@@ -3,9 +3,8 @@ using System;
 
 namespace Share.Data.Interfaces
 {
-    public interface IModificationAuditModel<TID> where TID : struct
+    public interface IModificationAuditModel
     {
-        TID? LastModifiedId { get; set; }
         DateTime? LastModifiedAt { get; set; }
     }
 }

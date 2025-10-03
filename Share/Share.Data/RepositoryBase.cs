@@ -8,19 +8,17 @@ namespace Share.Data
 {
     public abstract class RepositoryBase<TSchema, TID>(TID? accountId) : IRepository<TSchema>
         where TSchema : class
-        where TID : struct
     {
         TID? AccountId { get; } = accountId;
 
         public void SetCreateAuditProperties(TSchema entity)
         {
-            if (entity is ICreationAuditModel<TID> creationAuditModel)
+            if (entity is ICreationAuditModel creationAuditModel)
             {
-                creationAuditModel.CreatedId = AccountId;
                 creationAuditModel.CreatedAt = DateTime.Now;
             }
 
-            if(entity is IDeletionAuditModel<TID> deletionAuditModel)
+            if(entity is IDeletionAuditModel deletionAuditModel)
             {
                 deletionAuditModel.IsDeleted = false;
             }
@@ -28,26 +26,20 @@ namespace Share.Data
 
         public void SetUpdateAuditProperties(TSchema entity)
         {
-            if (entity is IModificationAuditModel<TID> modificationAuditModel)
+            if (entity is IModificationAuditModel modificationAuditModel)
             {
-                modificationAuditModel.LastModifiedId = AccountId;
                 modificationAuditModel.LastModifiedAt = DateTime.Now;
             }
         }
 
-        public bool SetDeleteAuditProperties(TSchema entity)
+        public void SetDeleteAuditProperties(TSchema entity)
         {
-            if (entity is IDeletionAuditModel<TID> deletionAuditModel)
+            if (entity is IDeletionAuditModel deletionAuditModel)
             {
                 deletionAuditModel.IsDeleted = true;
-                deletionAuditModel.DeletedId = AccountId;
                 deletionAuditModel.DeletedAt = DateTime.Now;
-                return true;
             }
-            
-            return false;
         }
-
 
         public abstract IQueryable<TSchema> GetAll();
         public abstract IQueryable<TSchema> FindBy(Expression<Func<TSchema, bool>> predicate);

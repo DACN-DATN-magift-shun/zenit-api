@@ -39,17 +39,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Host", "Statisti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Data", "Statistics\Statistics.Data\Statistics.Data.csproj", "{A108D96C-3120-41D3-88FB-AD0921E982A7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Account", "Account", "{A3252046-2588-4756-B630-AF7780823ACA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Accounts", "Accounts", "{A3252046-2588-4756-B630-AF7780823ACA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account.Host", "Account\Account.Host\Account.Host.csproj", "{820A52FF-775F-497E-8930-55A6085DC315}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Host", "Accounts\Accounts.Host\Accounts.Host.csproj", "{820A52FF-775F-497E-8930-55A6085DC315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account.Business", "Account\Account.Business\Account.Business.csproj", "{4EB67498-315B-45F1-9914-547C61E7746B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Business", "Accounts\Accounts.Business\Accounts.Business.csproj", "{4EB67498-315B-45F1-9914-547C61E7746B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account.Common", "Account\Account.Common\Account.Common.csproj", "{6B0DEBE4-DDC2-4F77-885B-661FAB13C35B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Common", "Accounts\Accounts.Common\Accounts.Common.csproj", "{6B0DEBE4-DDC2-4F77-885B-661FAB13C35B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account.Data", "Account\Account.Data\Account.Data.csproj", "{611806DD-307E-46CF-879A-79C97FD340E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Data", "Accounts\Accounts.Data\Accounts.Data.csproj", "{611806DD-307E-46CF-879A-79C97FD340E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account.Contract", "Account\Account.Contract\Account.Contract.csproj", "{2D9D44F3-70B1-4EC8-9D26-2DA153C38980}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Contract", "Accounts\Accounts.Contract\Accounts.Contract.csproj", "{2D9D44F3-70B1-4EC8-9D26-2DA153C38980}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
