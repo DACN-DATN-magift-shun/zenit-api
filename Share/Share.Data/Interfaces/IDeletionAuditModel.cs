@@ -3,10 +3,9 @@ using System;
 
 namespace Share.Data.Interfaces
 {
-    public interface IDeletionAuditModel<TID> where TID : struct
+    public interface IDeletionAuditModel
     {
         bool IsDeleted { get; set; }
-        TID? DeletedId { get; set; }
         DateTime? DeletedAt { get; set; }
     }
 }

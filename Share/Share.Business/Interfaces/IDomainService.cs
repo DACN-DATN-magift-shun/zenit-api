@@ -3,7 +3,9 @@ using System.Linq.Expressions;
 
 namespace Share.Business.Interfaces
 {
-    public interface IDomainService<TSchema> where TSchema : class
+    public interface IDomainService {}
+    public interface IDomainService<TSchema> : IDomainService
+        where TSchema : class
     {
         IQueryable<TSchema> GetAll();
         IQueryable<TSchema> FindBy(Expression<Func<TSchema, bool>> predicate);

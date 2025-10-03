@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Share\Share.Data\Share.Data.csproj" />
+    <ProjectReference Include="..\..\Share\Share.Business\Share.Business.csproj" />
+    <ProjectReference Include="..\..\Share\Share.Host\Share.Host.csproj" />
+    <ProjectReference Include="..\Accounts.Data\Accounts.Data.csproj" />
+    <ProjectReference Include="..\Accounts.Contract\Accounts.Contract.csproj" />
+    <ProjectReference Include="..\Accounts.Common\Accounts.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+  </ItemGroup>
+</Project>
