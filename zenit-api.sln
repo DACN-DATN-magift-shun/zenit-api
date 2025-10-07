@@ -3,53 +3,53 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{B1A4CF36-AEC4-4D7B-B6E9-91CB50CD28C8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Zenit.Zenit.Share", "Zenit.Zenit.Share", "{B1A4CF36-AEC4-4D7B-B6E9-91CB50CD28C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Share.Data", "Share\Share.Data\Share.Data.csproj", "{E64E4F62-6F5B-49A3-9A44-669D565145F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Share.Data", "Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj", "{E64E4F62-6F5B-49A3-9A44-669D565145F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Share.Common", "Share\Share.Common\Share.Common.csproj", "{E7F672FA-D3D1-4A9F-9821-EA824EE9EEB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Share.Common", "Zenit.Share\Zenit.Share.Common\Zenit.Share.Common.csproj", "{E7F672FA-D3D1-4A9F-9821-EA824EE9EEB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Share.Contract", "Share\Share.Contract\Share.Contract.csproj", "{3FF77D9E-E44A-4ED3-9992-FD37FC16808B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Share.Contract", "Zenit.Share\Zenit.Share.Contract\Zenit.Share.Contract.csproj", "{3FF77D9E-E44A-4ED3-9992-FD37FC16808B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Share.Business", "Share\Share.Business\Share.Business.csproj", "{317F8D60-C198-44C9-921F-EF0B66FD543A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Share.Business", "Zenit.Share\Zenit.Share.Business\Zenit.Share.Business.csproj", "{317F8D60-C198-44C9-921F-EF0B66FD543A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Share.Host", "Share\Share.Host\Share.Host.csproj", "{C47ED626-4D5B-430E-B488-FCC8D5128B57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Share.Host", "Zenit.Share\Zenit.Share.Host\Zenit.Share.Host.csproj", "{C47ED626-4D5B-430E-B488-FCC8D5128B57}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{A9A5C86D-340B-4DC7-AE13-EAB349457BCE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Zenit.Management", "Zenit.Management", "{A9A5C86D-340B-4DC7-AE13-EAB349457BCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management.Host", "Management\Management.Host\Management.Host.csproj", "{4118B7D4-29AC-43D0-B877-84F9B8BAA188}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Management.Host", "Zenit.Management\Zenit.Management.Host\Zenit.Management.Host.csproj", "{4118B7D4-29AC-43D0-B877-84F9B8BAA188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management.Data", "Management\Management.Data\Management.Data.csproj", "{12E09A76-284F-4B94-AF88-9987FD7CDED5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Management.Data", "Zenit.Management\Zenit.Management.Data\Zenit.Management.Data.csproj", "{12E09A76-284F-4B94-AF88-9987FD7CDED5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management.Common", "Management\Management.Common\Management.Common.csproj", "{46274B8E-0B3F-4180-83E8-D6CD1F432CC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Management.Common", "Zenit.Management\Zenit.Management.Common\Zenit.Management.Common.csproj", "{46274B8E-0B3F-4180-83E8-D6CD1F432CC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management.Business", "Management\Management.Business\Management.Business.csproj", "{A2F00450-4377-4B01-A5ED-42E78C6DC391}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Management.Business", "Zenit.Management\Zenit.Management.Business\Zenit.Management.Business.csproj", "{A2F00450-4377-4B01-A5ED-42E78C6DC391}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Management.Contract", "Management\Management.Contract\Management.Contract.csproj", "{0920D1B7-D96A-4E4B-B7C7-D610AE54F398}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Management.Contract", "Zenit.Management\Zenit.Management.Contract\Zenit.Management.Contract.csproj", "{0920D1B7-D96A-4E4B-B7C7-D610AE54F398}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Statistics", "Statistics", "{2136024A-AF1B-400D-B75B-8914B0621638}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Zenit.Statistics", "Zenit.Statistics", "{2136024A-AF1B-400D-B75B-8914B0621638}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Contract", "Statistics\Statistics.Contract\Statistics.Contract.csproj", "{D187A3B3-2043-4E25-981C-B454DC8AEC9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Statistics.Contract", "Zenit.Statistics\Zenit.Statistics.Contract\Zenit.Statistics.Contract.csproj", "{D187A3B3-2043-4E25-981C-B454DC8AEC9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Common", "Statistics\Statistics.Common\Statistics.Common.csproj", "{D4DDC2A0-5B7B-4B60-96C1-6231BC437182}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Statistics.Common", "Zenit.Statistics\Zenit.Statistics.Common\Zenit.Statistics.Common.csproj", "{D4DDC2A0-5B7B-4B60-96C1-6231BC437182}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Business", "Statistics\Statistics.Business\Statistics.Business.csproj", "{877A53EA-15E2-487A-A0CF-78D38AB82BCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Statistics.Business", "Zenit.Statistics\Zenit.Statistics.Business\Zenit.Statistics.Business.csproj", "{877A53EA-15E2-487A-A0CF-78D38AB82BCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Host", "Statistics\Statistics.Host\Statistics.Host.csproj", "{6CDF8683-67F7-4B28-AD3C-D1E8650F84FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Statistics.Host", "Zenit.Statistics\Zenit.Statistics.Host\Zenit.Statistics.Host.csproj", "{6CDF8683-67F7-4B28-AD3C-D1E8650F84FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Data", "Statistics\Statistics.Data\Statistics.Data.csproj", "{A108D96C-3120-41D3-88FB-AD0921E982A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Statistics.Data", "Zenit.Statistics\Zenit.Statistics.Data\Zenit.Statistics.Data.csproj", "{A108D96C-3120-41D3-88FB-AD0921E982A7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Accounts", "Accounts", "{A3252046-2588-4756-B630-AF7780823ACA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Zenit.Accounts", "Zenit.Accounts", "{A3252046-2588-4756-B630-AF7780823ACA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Host", "Accounts\Accounts.Host\Accounts.Host.csproj", "{820A52FF-775F-497E-8930-55A6085DC315}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Accounts.Host", "Zenit.Accounts\Zenit.Accounts.Host\Zenit.Accounts.Host.csproj", "{820A52FF-775F-497E-8930-55A6085DC315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Business", "Accounts\Accounts.Business\Accounts.Business.csproj", "{4EB67498-315B-45F1-9914-547C61E7746B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Accounts.Business", "Zenit.Accounts\Zenit.Accounts.Business\Zenit.Accounts.Business.csproj", "{4EB67498-315B-45F1-9914-547C61E7746B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Common", "Accounts\Accounts.Common\Accounts.Common.csproj", "{6B0DEBE4-DDC2-4F77-885B-661FAB13C35B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Accounts.Common", "Zenit.Accounts\Zenit.Accounts.Common\Zenit.Accounts.Common.csproj", "{6B0DEBE4-DDC2-4F77-885B-661FAB13C35B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Data", "Accounts\Accounts.Data\Accounts.Data.csproj", "{611806DD-307E-46CF-879A-79C97FD340E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Accounts.Data", "Zenit.Accounts\Zenit.Accounts.Data\Zenit.Accounts.Data.csproj", "{611806DD-307E-46CF-879A-79C97FD340E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accounts.Contract", "Accounts\Accounts.Contract\Accounts.Contract.csproj", "{2D9D44F3-70B1-4EC8-9D26-2DA153C38980}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenit.Accounts.Contract", "Zenit.Accounts\Zenit.Accounts.Contract\Zenit.Accounts.Contract.csproj", "{2D9D44F3-70B1-4EC8-9D26-2DA153C38980}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

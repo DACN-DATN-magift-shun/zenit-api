@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Business\Zenit.Share.Business.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Host\Zenit.Share.Host.csproj" />
+    <ProjectReference Include="..\Zenit.Accounts.Data\Zenit.Accounts.Data.csproj" />
+    <ProjectReference Include="..\Zenit.Accounts.Contract\Zenit.Accounts.Contract.csproj" />
+    <ProjectReference Include="..\Zenit.Accounts.Common\Zenit.Accounts.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+  </ItemGroup>
+</Project>
