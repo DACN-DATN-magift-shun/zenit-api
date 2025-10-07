@@ -1,6 +1,0 @@
-@Statistics.Host_HostAddress = http://localhost:5234
-
-GET {{Statistics.Host_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
