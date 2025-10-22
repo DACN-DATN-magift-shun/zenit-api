@@ -1,38 +1,47 @@
-using MongoDB.Driver;
-using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
-using Zenit.Accounts.Data.Attributes;
-
+using Zenit.Share.Common.Constants;
+using Zenit.Share.Data;
+using Zenit.Share.Data.Extensions;
 
 namespace Zenit.Accounts.Data
 {
-    public class AccountDbContext
+    public class AccountDbContext : DbContextBase
     {
-        private readonly IMongoDatabase _database;
-        public AccountDbContext(string connectionString, string databaseName)
+        public AccountDbContext(DbContextOptions options) : base(options)
         {
-            var client = new MongoClient(connectionString);
-            _database = client.GetDatabase(databaseName);
+            this.ConnectionString = GetConnectionString();
+            this.MigrationAssembly = GetMigrationAssembly();
         }
 
-        public IMongoDatabase GetDatabase()
+        public static string GetConnectionString()
         {
-            return _database;
+            var connectionName = EnvConstants.ACCOUNT_CONNECTION;
+
+            if (string.IsNullOrEmpty(connectionName))
+            {
+                throw new InvalidOperationException($"Connection Name is not set.");
+            }
+
+            var connectionString = Environment.GetEnvironmentVariable(connectionName);
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException($"Connection string for '{connectionName}' is not set.");
+            }
+
+            return connectionString;
         }
 
-        public IMongoCollection<TSchema> GetCollection<TSchema>()
+        public static string GetMigrationAssembly()
         {
-            var type = typeof(TSchema);
-            var attribute = type.GetCustomAttributes<BsonCollectionAttribute>();
+            return "Zenit.Accounts.Migrator";
+        }
 
-            try
-            {
-                return _database.GetCollection<TSchema>(attribute.First().CollectionName);
-            }
-            catch
-            {
-                throw new Exception($"Collection name for {type.Name} not found.");
-            }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.RegisterAllEntities();
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

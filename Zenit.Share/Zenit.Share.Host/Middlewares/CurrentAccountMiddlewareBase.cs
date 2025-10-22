@@ -6,8 +6,8 @@ using Zenit.Share.Host.Interfaces;
 
 namespace Zenit.Share.Host.Middlewares
 {
-    public abstract class CurrentAccountMiddlewareBase<T, TID>(RequestDelegate next) : ICurrentAccountMiddleware
-        where T : ICurrentAccount<TID>
+    public abstract class CurrentAccountMiddlewareBase<T>(RequestDelegate next) : ICurrentAccountMiddleware
+        where T : ICurrentAccount
     {
         protected readonly RequestDelegate _next = next;
 

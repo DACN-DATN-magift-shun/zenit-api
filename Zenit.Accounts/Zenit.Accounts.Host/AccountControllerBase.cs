@@ -1,4 +1,5 @@
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -8,7 +9,7 @@ namespace Zenit.Accounts.Host
     public abstract class AccountControllerBase : Controller
     {
         protected IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
-        
+
         protected async Task<IActionResult> GetRequest<TRequest, TResponse>(TRequest request)
             where TRequest : IRequest<TResponse>
         {

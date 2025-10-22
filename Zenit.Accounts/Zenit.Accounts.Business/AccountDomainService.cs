@@ -4,8 +4,8 @@ using Zenit.Share.Data.Interfaces;
 
 namespace Zenit.Accounts.Business
 {
-    public class AccountDomainService<TSchema>(IRepository<TSchema> repository) : DomainServiceBase<TSchema>(repository)
-        where TSchema : class
+    public class AccountDomainService<TEntity>(IRepository<TEntity> repository) : DomainServiceBase<TEntity>(repository)
+        where TEntity : class
     {
 
     }

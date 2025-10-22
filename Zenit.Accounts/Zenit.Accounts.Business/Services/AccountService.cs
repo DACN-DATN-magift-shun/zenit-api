@@ -1,11 +1,10 @@
 using Mapster;
-using MongoDB.Bson;
 
-using Zenit.Accounts.Business.Managers;
-using Zenit.Accounts.Contract.Requests;
-using Zenit.Accounts.Data.Schemas;
-using Zenit.Accounts.Contract.Errors;
 using Zenit.Accounts.Business.Helpers;
+using Zenit.Accounts.Business.Managers;
+using Zenit.Accounts.Contract.Errors;
+using Zenit.Accounts.Contract.Requests;
+using Zenit.Accounts.Data.Entities;
 
 
 namespace Zenit.Accounts.Business.Services
@@ -77,9 +76,8 @@ namespace Zenit.Accounts.Business.Services
 
         public Task<AccountGetDetailResponse> GetDetail(AccountGetDetailRequest request)
         {
-            var parsedId = ObjectId.Parse(request.Id);
-
-            var account = _AccountManager.FindBy(current => current.Id == parsedId).FirstOrDefault();
+            var requestId = Guid.Parse(request.Id);
+            var account = _AccountManager.FindBy(current => current.Id == requestId).FirstOrDefault();
 
             return Task.FromResult(Mapper.Map<AccountGetDetailResponse>(account!));
         }
@@ -107,6 +105,6 @@ namespace Zenit.Accounts.Business.Services
             return Task.CompletedTask;
         }
 
-        
+
     }
 }

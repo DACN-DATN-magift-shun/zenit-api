@@ -1,6 +1,7 @@
+using MediatR;
+
 using Zenit.Accounts.Business.Services;
 using Zenit.Accounts.Contract.Requests;
-using MediatR;
 
 namespace Zenit.Accounts.Host.RequestHandlers
 {

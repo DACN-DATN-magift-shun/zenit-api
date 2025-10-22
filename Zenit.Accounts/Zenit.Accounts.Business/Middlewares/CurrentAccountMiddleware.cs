@@ -1,6 +1,8 @@
-using MongoDB.Bson;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+
+using Microsoft.AspNetCore.Http;
+
+using MongoDB.Bson;
 
 using Zenit.Accounts.Common.Models;
 using Zenit.Share.Host.Middlewares;
@@ -8,8 +10,8 @@ using Zenit.Share.Host.Middlewares;
 
 namespace Zenit.Accounts.Business.Middlewares
 {
-    public class CurrentAccountMiddleware(RequestDelegate next) 
-        : CurrentAccountMiddlewareBase<CurrentAccount, ObjectId>(next)
+    public class CurrentAccountMiddleware(RequestDelegate next)
+        : CurrentAccountMiddlewareBase<CurrentAccount>(next)
     {
         public override async Task InvokeAsync(HttpContext context, CurrentAccount currentAccount)
         {
@@ -27,9 +29,8 @@ namespace Zenit.Accounts.Business.Middlewares
                 var phone = claimsPrincipal.FindFirst(ClaimTypes.MobilePhone)?.Value;
                 var address = claimsPrincipal.FindFirst(ClaimTypes.StreetAddress)?.Value;
 
-                currentAccount.Id = !string.IsNullOrEmpty(identifier) ?
-                    ObjectId.Parse(identifier) : ObjectId.Empty;
-                    
+                currentAccount.Id = Guid.TryParse(identifier, out var id) ? id : Guid.Empty;
+
                 currentAccount.Username = username ?? string.Empty;
                 currentAccount.Email = email ?? string.Empty;
                 currentAccount.Phone = phone;

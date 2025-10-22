@@ -11,7 +11,7 @@ namespace Zenit.Accounts.Contract.Requests
 
     public class AccountLoginResponse
     {
-        public required string AccessToken { get; set; }   
-        public required string RefreshToken { get; set; }   
+        public required string AccessToken { get; set; }
+        public required string RefreshToken { get; set; }
     }
 }

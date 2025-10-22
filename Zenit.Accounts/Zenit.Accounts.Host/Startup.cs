@@ -1,3 +1,5 @@
+using Mapster;
+
 using MongoDB.Bson;
 
 using Zenit.Accounts.Common.Models;
@@ -5,8 +7,6 @@ using Zenit.Accounts.Data;
 using Zenit.Share.Common.Constants;
 using Zenit.Share.Data.Interfaces;
 using Zenit.Share.Host.Extensions;
-using Mapster;
-using Zenit.Accounts.Host.Extensions;
 
 
 namespace Zenit.Accounts.Host
@@ -18,7 +18,7 @@ namespace Zenit.Accounts.Host
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddHttpContextAccessor();
-            services.AddDbContext();
+            services.AddDbContext<AccountDbContext>();
 
             services.AddSwagger();
 
@@ -32,7 +32,7 @@ namespace Zenit.Accounts.Host
 
             services.AddAuthenticationService();
 
-            services.AddCurrentAccount<ObjectId>();
+            services.AddCurrentAccount();
             services.AddScoped(typeof(IRepository<>), typeof(AccountRepository<>));
             services.AddMapster();
         }
@@ -60,7 +60,7 @@ namespace Zenit.Accounts.Host
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCurrentAccount<CurrentAccount, ObjectId>();
+            app.UseCurrentAccount<CurrentAccount>();
 
             app.UseEndpoints(endpoints =>
             {

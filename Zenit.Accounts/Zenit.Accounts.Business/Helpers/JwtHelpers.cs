@@ -1,11 +1,11 @@
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 using Zenit.Accounts.Data.Models;
-using Zenit.Accounts.Data.Schemas;
-using System.Security.Claims;
+using Zenit.Accounts.Data.Entities;
 using Zenit.Share.Common.Constants;
 
 
@@ -31,6 +31,7 @@ namespace Zenit.Accounts.Business.Helpers
                 throw;
             }
         }
+
         public static string GenerateAccessToken(Account account)
         {
             var claims = new List<Claim> {
@@ -59,8 +60,8 @@ namespace Zenit.Accounts.Business.Helpers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
-
         }
+
         public static string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];

@@ -1,9 +1,9 @@
 namespace Zenit.Share.Common.Interfaces
 {
 
-    public interface ICurrentAccount<TID>
+    public interface ICurrentAccount
     {
-        TID Id { get; set; }
+        Guid Id { get; set; }
         string Username { get; set; }
         string Email { get; set; }
         string? Phone { get; set; }

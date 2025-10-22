@@ -13,6 +13,6 @@ namespace Zenit.Accounts.Contract.Requests
         public required string Message { get; set; }
         public required string ResetToken { get; set; }
         public required DateTime Expiration { get; set; }
-        
+
     }
 }
