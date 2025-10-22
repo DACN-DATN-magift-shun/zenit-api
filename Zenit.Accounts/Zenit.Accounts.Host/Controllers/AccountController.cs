@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Zenit.Accounts.Contract.Requests;
-using Microsoft.AspNetCore.Authorization;
 
 
 namespace Zenit.Accounts.Host.Controllers

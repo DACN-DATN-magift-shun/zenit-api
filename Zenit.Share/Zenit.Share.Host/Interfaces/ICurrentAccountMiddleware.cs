@@ -7,11 +7,11 @@ namespace Zenit.Share.Host.Interfaces
 {
     public interface ICurrentAccountMiddleware
     {
-        
+
     }
 
-    public interface ICurrentAccountMiddleware<T, TID> : ICurrentAccountMiddleware
-        where T : ICurrentAccount<TID>
+    public interface ICurrentAccountMiddleware<T> : ICurrentAccountMiddleware
+        where T : ICurrentAccount
     {
         Task InvokeAsync(HttpContext context, T currentAccount);
     }

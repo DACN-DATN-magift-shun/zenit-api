@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+
 namespace Zenit.Statistics.Host
 {
     public record Startup(IConfiguration Configuration)
@@ -12,7 +14,7 @@ namespace Zenit.Statistics.Host
             {
                 configs.RegisterServicesFromAssemblyContaining<Startup>();
             });
-        
+
         }
 
         public void Configure(IApplicationBuilder app)
@@ -29,7 +31,7 @@ namespace Zenit.Statistics.Host
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.useEndpoints(endpoints =>
+            app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapDefaultControllerRoute();

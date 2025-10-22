@@ -1,4 +1,5 @@
 using System.Reflection;
+
 using Microsoft.AspNetCore.Builder;
 
 using Zenit.Share.Common.Constants;
@@ -17,8 +18,8 @@ namespace Zenit.Share.Host.Extensions
             return app;
         }
 
-        public static IApplicationBuilder UseCurrentAccount<T, TID>(this IApplicationBuilder app)
-            where T : ICurrentAccount<TID>
+        public static IApplicationBuilder UseCurrentAccount<T>(this IApplicationBuilder app)
+            where T : ICurrentAccount
         {
             var appName = Environment.GetEnvironmentVariable(EnvConstants.APP_NAME) ??
                 throw new Exception("App name is not set.");

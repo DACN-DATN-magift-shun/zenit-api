@@ -1,9 +1,12 @@
 using System.Reflection;
 using System.Text;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
 using Zenit.Share.Business.Interfaces;
 using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Interfaces;
@@ -39,9 +42,9 @@ namespace Zenit.Share.Host.Extensions
             return services;
         }
 
-        public static IServiceCollection AddCurrentAccount<TID>(this IServiceCollection services)
+        public static IServiceCollection AddCurrentAccount(this IServiceCollection services)
         {
-            services.AddServicesWithAssignedInterface<ICurrentAccount<TID>>();
+            services.AddServicesWithAssignedInterface<ICurrentAccount>();
             return services;
         }
 

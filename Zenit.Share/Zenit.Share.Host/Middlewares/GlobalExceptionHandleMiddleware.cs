@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+
 using Zenit.Share.Common.Exceptions;
 
 namespace Zenit.Share.Host.Middlewares

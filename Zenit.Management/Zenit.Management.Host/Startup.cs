@@ -12,7 +12,7 @@ namespace Zenit.Management.Host
             {
                 configs.RegisterServicesFromAssemblyContaining<Startup>();
             });
-        
+
         }
 
         public void Configure(IApplicationBuilder app)
