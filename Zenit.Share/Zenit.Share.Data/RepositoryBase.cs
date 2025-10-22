@@ -20,7 +20,7 @@ namespace Zenit.Share.Data
         {
             if (entity is ICreationAuditModel<TID> creationAuditModel)
             {
-                creationAuditModel.CreatedAt = DateTime.Now;
+                creationAuditModel.CreatedAt = DateTime.UtcNow;
             }
 
             if (entity is IDeletionAuditModel<TID> deletionAuditModel)
@@ -34,7 +34,7 @@ namespace Zenit.Share.Data
         {
             if (entity is IModificationAuditModel<TID> modificationAuditModel)
             {
-                modificationAuditModel.LastModifiedAt = DateTime.Now;
+                modificationAuditModel.LastModifiedAt = DateTime.UtcNow;
             }
         }
 
@@ -43,7 +43,7 @@ namespace Zenit.Share.Data
             if (entity is IDeletionAuditModel<TID> deletionAuditModel)
             {
                 deletionAuditModel.IsDeleted = true;
-                deletionAuditModel.DeletedAt = DateTime.Now;
+                deletionAuditModel.DeletedAt = DateTime.UtcNow;
                 return true;
             }
             return false;
@@ -114,7 +114,7 @@ namespace Zenit.Share.Data
         public TEntity Delete(TEntity entity)
         {
             SetDeleteAuditProperties(entity);
-            _context.Set<TEntity>().Remove(entity);
+            _context.Set<TEntity>().Update(entity);
             return entity;
         }
 
@@ -124,7 +124,7 @@ namespace Zenit.Share.Data
             {
                 SetDeleteAuditProperties(entity);
             }
-            _context.Set<TEntity>().RemoveRange(entities);
+            _context.Set<TEntity>().UpdateRange(entities);
             return entities;
         }
 
