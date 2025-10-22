@@ -1,5 +1,7 @@
 using Mapster;
 
+using MediatR;
+
 using Zenit.Accounts.Business.Helpers;
 using Zenit.Accounts.Business.Managers;
 using Zenit.Accounts.Contract.Errors;
@@ -13,7 +15,7 @@ namespace Zenit.Accounts.Business.Services
     {
         private AccountManager _AccountManager => GetService<AccountManager>();
 
-        public Task<AccountCreateResponse> Create(AccountCreateRequest request)
+        public async Task<AccountCreateResponse> Create(AccountCreateRequest request)
         {
             var salt = Pbkdf2Helpers.GenerateSalt();
             var hashedPassword = Pbkdf2Helpers.HashPassword(request.Password, salt);
@@ -21,10 +23,12 @@ namespace Zenit.Accounts.Business.Services
 
             var account = Mapper.Map<Account>(request);
             _AccountManager.Add(account);
-            return Task.FromResult(Mapper.Map<AccountCreateResponse>(account));
+
+            await UnitOfWork.SaveChangesAsync();
+            return Mapper.Map<AccountCreateResponse>(account);
         }
 
-        public Task<AccountLoginResponse> Login(AccountLoginRequest request)
+        public async Task<AccountLoginResponse> Login(AccountLoginRequest request)
         {
             var account = _AccountManager.GetAll()
                 .FirstOrDefault(current => current.Email == request.Email)
@@ -61,7 +65,8 @@ namespace Zenit.Accounts.Business.Services
             }
 
             var tokens = JwtHelpers.GenerateJwtTokens(account);
-            return Task.FromResult(Mapper.Map<AccountLoginResponse>(tokens));
+            await UnitOfWork.SaveChangesAsync();
+            return Mapper.Map<AccountLoginResponse>(tokens);
         }
 
         // public Task<AccountForgotPasswordRequest> ForgotPassword(AccountForgotPasswordRequest request)
@@ -82,7 +87,7 @@ namespace Zenit.Accounts.Business.Services
             return Task.FromResult(Mapper.Map<AccountGetDetailResponse>(account!));
         }
 
-        public Task<AccountUpdateResponse> Update(AccountUpdateRequest request)
+        public async Task<AccountUpdateResponse> Update(AccountUpdateRequest request)
         {
             var account = _AccountManager
                 .FindBy(current => current.Id.ToString() == request.Id)
@@ -91,10 +96,11 @@ namespace Zenit.Accounts.Business.Services
             request.Adapt(account);
             _AccountManager.Update(account!);
 
-            return Task.FromResult(Mapper.Map<AccountUpdateResponse>(account!));
+            await UnitOfWork.SaveChangesAsync();
+            return Mapper.Map<AccountUpdateResponse>(account!)  ;
         }
 
-        public Task Delete(AccountDeleteRequest request)
+        public async Task Delete(AccountDeleteRequest request)
         {
             var account = _AccountManager
                 .FindBy(current => current.Id.ToString() == request.Id)
@@ -102,7 +108,8 @@ namespace Zenit.Accounts.Business.Services
 
             _AccountManager.Delete(account!);
 
-            return Task.CompletedTask;
+            await UnitOfWork.SaveChangesAsync();
+            return;
         }
 
 

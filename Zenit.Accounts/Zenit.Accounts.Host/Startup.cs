@@ -34,6 +34,7 @@ namespace Zenit.Accounts.Host
 
             services.AddCurrentAccount();
             services.AddScoped(typeof(IRepository<>), typeof(AccountRepository<>));
+            services.AddScoped<IUnitOfWork, AccountUnitOfWork>();
             services.AddMapster();
         }
 

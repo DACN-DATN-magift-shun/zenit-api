@@ -10,8 +10,7 @@ namespace Zenit.Share.Data
     {
         public async Task SaveChangesAsync()
         {
-            await Task.CompletedTask;
-            // implement event sourcing here
+            await context.SaveChangesAsync();
         }
 
         public async Task BeginTransactionAsync()
