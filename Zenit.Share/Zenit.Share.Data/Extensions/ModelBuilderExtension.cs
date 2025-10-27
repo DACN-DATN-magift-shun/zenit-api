@@ -12,11 +12,6 @@ namespace Zenit.Share.Data.Extensions
             var assemblyTypes = Assembly.GetCallingAssembly().GetExportedTypes()
                 .Where(t => t.IsPublic && !t.IsInterface && !t.IsAbstract);
 
-            foreach (var t in assemblyTypes)
-            {
-                Console.WriteLine($"  {t.FullName}");
-            }
-
             var entityTypes = assemblyTypes
                 .Where(t => t.IsAssignableTo(typeof(IDataModel)) || t.IsAssignableTo(typeof(IDataModel<>)));
 
