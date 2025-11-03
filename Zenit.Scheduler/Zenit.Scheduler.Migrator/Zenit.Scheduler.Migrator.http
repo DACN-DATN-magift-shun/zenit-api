@@ -1,0 +1,6 @@
+@Zenit.Scheduler.Migrator_HostAddress = http://localhost:5004
+
+GET {{Zenit.Scheduler.Migrator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
