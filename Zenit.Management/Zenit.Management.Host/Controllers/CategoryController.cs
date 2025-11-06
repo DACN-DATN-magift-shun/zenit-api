@@ -6,8 +6,8 @@ using Zenit.Management.Contract.Requests.CategoryRequests;
 namespace Zenit.Management.Host.Controller
 {
     [ApiController]
-    [Route("api/[controller]")]
-    // [Authorize]
+    [Route("[controller]")]
+    [Authorize]
     public class CategoryController : ManagementControllerBase
     {
         [HttpGet("{id}")]
