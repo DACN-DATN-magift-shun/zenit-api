@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Business\Zenit.Share.Business.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj" />
+    <ProjectReference Include="..\Zenit.Scheduler.Common\Zenit.Scheduler.Common.csproj" />
+    <ProjectReference Include="..\Zenit.Scheduler.Data\Zenit.Scheduler.Data.csproj" />
+    <ProjectReference Include="..\Zenit.Scheduler.Contract\Zenit.Scheduler.Contract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
+  </ItemGroup>
+
+</Project>
