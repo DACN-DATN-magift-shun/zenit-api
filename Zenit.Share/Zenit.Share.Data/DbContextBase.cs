@@ -6,8 +6,8 @@ namespace Zenit.Share.Data
 {
     public abstract class DbContextBase(DbContextOptions options) : DbContext(options)
     {
-        protected string? ConnectionString { get; set; }
-        protected string? MigrationAssembly { get; set; }
+        public string? ConnectionString { get; set; }
+        public string? MigrationAssembly { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

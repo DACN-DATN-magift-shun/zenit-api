@@ -7,5 +7,6 @@ namespace Zenit.Share.Common.Constants
         public const string IS_PRODUCTION = "IS_PRODUCTION";
         public const string ACCOUNT_CONNECTION = "ACCOUNT_CONNECTION";
         public const string SCHEDULER_CONNECTION = "SCHEDULER_CONNECTION";
+        public const string MANAGEMENT_CONNECTION = "MANAGEMENT_CONNECTION";
     }
 }

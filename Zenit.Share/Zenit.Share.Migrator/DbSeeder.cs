@@ -67,6 +67,7 @@ public static class DbSeeder
             .ToList();
 
         // run seeders not executed yet and mark them as executed
+        Console.WriteLine("▶️ Start seeding...");
         foreach (var seeder in seederInstances)
         {
             if (executedSeeders.Contains(seeder.Name))
@@ -88,5 +89,6 @@ public static class DbSeeder
                 throw;
             }
         }
+        Console.WriteLine("✅ Seeding completed.");
     }
 }

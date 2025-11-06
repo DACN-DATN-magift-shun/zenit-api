@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Zenit.Accounts.Migrator.Migrations
 {
     /// <inheritdoc />
-    public partial class InitAccountSchema : Migration
+    public partial class InitialCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,17 @@ namespace Zenit.Accounts.Migrator.Migrations
                 {
                     table.PrimaryKey("PK_Account", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "AccountDataModel",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountDataModel", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -40,6 +51,9 @@ namespace Zenit.Accounts.Migrator.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Account");
+
+            migrationBuilder.DropTable(
+                name: "AccountDataModel");
         }
     }
 }

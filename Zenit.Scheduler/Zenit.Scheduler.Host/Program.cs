@@ -1,5 +1,5 @@
 using DotNetEnv;
-using SlnHost = Microsoft.Extensions.Hosting.Host;
+using ZenitHost = Microsoft.Extensions.Hosting.Host;
 
 namespace Zenit.Scheduler.Host
 {
@@ -13,7 +13,7 @@ namespace Zenit.Scheduler.Host
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             Env.Load();
-            return SlnHost.CreateDefaultBuilder(args)
+            return ZenitHost.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

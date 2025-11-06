@@ -7,7 +7,7 @@ using Zenit.Accounts.Contract.Requests;
 namespace Zenit.Accounts.Host.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AccountController : AccountControllerBase
     {
         [HttpPost("register")]

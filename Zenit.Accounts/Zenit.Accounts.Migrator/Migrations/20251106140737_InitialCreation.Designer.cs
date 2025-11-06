@@ -12,8 +12,8 @@ using Zenit.Accounts.Data;
 namespace Zenit.Accounts.Migrator.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20251022031403_InitAccountSchema")]
-    partial class InitAccountSchema
+    [Migration("20251106140737_InitialCreation")]
+    partial class InitialCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,17 @@ namespace Zenit.Accounts.Migrator.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Account");
+                });
+
+            modelBuilder.Entity("Zenit.Accounts.Data.Models.AccountDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountDataModel");
                 });
 #pragma warning restore 612, 618
         }
