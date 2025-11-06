@@ -27,7 +27,7 @@ namespace Zenit.Management.Business.Services.CategoryServices
             {
                 categoryGroup.Name,
                 categoryGroup.GroupType,
-                categories,
+                Categories = categories,
                 categoryGroup.LimitAlertThreshold
             };
 
@@ -55,22 +55,20 @@ namespace Zenit.Management.Business.Services.CategoryServices
             return Mapper.Map<UpdateCategoryResponse>(category);
         }
 
-        public async Task<DeleteCategoryResponse> Delete(DeleteCategoryRequest request)
+        public async Task Delete(DeleteCategoryRequest request)
         {
             var category = _CategoryManager.FindBy(c => c.Id == request.Id).FirstOrDefault();
 
             _CategoryManager.Delete(category);
             await UnitOfWork.SaveChangesAsync();
-            return Mapper.Map<DeleteCategoryResponse>(category);
         }
 
-        public async Task<DeleteMultipleCategoriesResponse> DeleteMany(DeleteMultipleCategoriesRequest request)
+        public async Task DeleteMany(DeleteMultipleCategoriesRequest request)
         {
             var categories = _CategoryManager.FindBy(c => request.Ids.Contains(c.Id)).ToList();
 
             _CategoryManager.DeleteRange(categories);
             await UnitOfWork.SaveChangesAsync();
-            return Mapper.Map<DeleteMultipleCategoriesResponse>(categories);
         }
     }
 }

@@ -7,18 +7,20 @@ namespace Zenit.Management.Host.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    // [Authorize]
     public class CategoryController : ManagementControllerBase
     {
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory(GetCategoryRequest request)
+        public async Task<IActionResult> GetCategory(Guid id)
         {
+            var request = new GetCategoryRequest { Id = id };
             return await GetRequest<GetCategoryRequest, GetCategoryResponse>(request);
         }
 
         [HttpGet("groups/{groupId}")]
-        public async Task<IActionResult> GetCategoryGroup(GetCategoryGroupRequest request)
+        public async Task<IActionResult> GetCategoryGroup(Guid groupId)
         {
+            var request = new GetCategoryGroupRequest { GroupId = groupId };
             return await GetRequest<GetCategoryGroupRequest, GetCategoryGroupResponse>(request);
         }
 
@@ -29,14 +31,15 @@ namespace Zenit.Management.Host.Controller
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateCategory(string id, UpdateCategoryRequest request)
+        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request)
         {
             return await UpdateRequest<UpdateCategoryRequest, UpdateCategoryResponse>(request);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(string id, DeleteCategoryRequest request)
+        public async Task<IActionResult> DeleteCategory(Guid id)
         {
+            var request = new DeleteCategoryRequest { Id = id };
             return await DeleteRequest(request);
         }
 

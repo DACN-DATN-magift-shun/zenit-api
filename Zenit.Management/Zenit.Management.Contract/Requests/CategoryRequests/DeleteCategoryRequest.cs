@@ -6,8 +6,4 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
     {
         public required Guid Id { get; set; }
     }
-
-    public class DeleteCategoryResponse
-    {
-    }
 }

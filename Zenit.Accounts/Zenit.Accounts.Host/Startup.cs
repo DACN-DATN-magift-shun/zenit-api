@@ -64,6 +64,7 @@ namespace Zenit.Accounts.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

@@ -9,6 +9,6 @@ namespace Zenit.Management.Data.Entities
     {
         public required string Name { get; set; }
         public required CategoryGroupType GroupType { get; set; }
-        public short? LimitAlertThreshold { get; set; }
+        public int? LimitAlertThreshold { get; set; }
     }
 }

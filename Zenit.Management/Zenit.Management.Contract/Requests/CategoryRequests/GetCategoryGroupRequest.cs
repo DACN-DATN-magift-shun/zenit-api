@@ -15,6 +15,6 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
         public required string Name { get; set; }
         public required CategoryGroupType GroupType { get; set; }
         public List<Category>? Categories { get; set; }
-        public short LimitAlertThreshold { get; set; }
+        public int? LimitAlertThreshold { get; set; }
     }
 }
