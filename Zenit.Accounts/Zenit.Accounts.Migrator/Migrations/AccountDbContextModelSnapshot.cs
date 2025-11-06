@@ -71,6 +71,17 @@ namespace Zenit.Accounts.Migrator.Migrations
 
                     b.ToTable("Account");
                 });
+
+            modelBuilder.Entity("Zenit.Accounts.Data.Models.AccountDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountDataModel");
+                });
 #pragma warning restore 612, 618
         }
     }

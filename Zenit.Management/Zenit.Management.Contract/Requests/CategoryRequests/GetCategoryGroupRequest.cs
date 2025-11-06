@@ -1,0 +1,20 @@
+using MediatR;
+
+using Zenit.Management.Common.Enums;
+using Zenit.Management.Data.Entities;
+
+namespace Zenit.Management.Contract.Requests.CategoryRequests
+{
+    public class GetCategoryGroupRequest : IRequest<GetCategoryGroupResponse>
+    {
+        public required Guid GroupId { get; set; }
+    }
+
+    public class GetCategoryGroupResponse
+    {
+        public required string Name { get; set; }
+        public required CategoryGroupType GroupType { get; set; }
+        public List<Category>? Categories { get; set; }
+        public short LimitAlertThreshold { get; set; }
+    }
+}

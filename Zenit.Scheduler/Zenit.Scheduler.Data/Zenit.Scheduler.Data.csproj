@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Zenit.Scheduler.Common\Zenit.Scheduler.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+  </ItemGroup>
+
 </Project>
