@@ -1,5 +1,5 @@
-using Zenit.Management.Common.Enums;
 using Zenit.Management.Data.Entities;
+using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Migrator.Seeds
 {

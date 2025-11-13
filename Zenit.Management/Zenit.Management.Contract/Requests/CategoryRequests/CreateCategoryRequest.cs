@@ -7,7 +7,7 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
         public required string Name { get; set; }
         public required string Icon { get; set; }
         public int? ExpenseLimit { get; set; }
-        public int? LimitAlertThreshold { get; set; }
+        public float? ExpenseAlertThreshold { get; set; }
         public required Guid GroupId { get; set; }
     }
 
@@ -17,7 +17,7 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
         public required string Name { get; set; }
         public required string Icon { get; set; }
         public int? ExpenseLimit { get; set; }
-        public int? LimitAlertThreshold { get; set; }
+        public float? ExpenseAlertThreshold { get; set; }
         public required Guid GroupId { get; set; }
     }
 }

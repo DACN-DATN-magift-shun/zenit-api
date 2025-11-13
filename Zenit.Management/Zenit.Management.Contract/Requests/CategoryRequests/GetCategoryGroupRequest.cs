@@ -1,7 +1,7 @@
 using MediatR;
 
-using Zenit.Management.Common.Enums;
 using Zenit.Management.Data.Entities;
+using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Contract.Requests.CategoryRequests
 {
@@ -13,8 +13,7 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
     public class GetCategoryGroupResponse
     {
         public required string Name { get; set; }
-        public required CategoryGroupType GroupType { get; set; }
+        public required CategoryGroupType Type { get; set; }
         public List<Category>? Categories { get; set; }
-        public int? LimitAlertThreshold { get; set; }
     }
 }

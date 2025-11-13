@@ -10,7 +10,7 @@ namespace Zenit.Share.Business
 {
     public abstract class ApplicationServiceBase(IServiceProvider serviceProvider) : IApplicationService
     {
-        private IServiceProvider ServiceProvider { get; } = serviceProvider;
+        protected IServiceProvider ServiceProvider { get; } = serviceProvider;
         protected IMapper Mapper => ServiceProvider.GetRequiredService<IMapper>();
         protected IUnitOfWork UnitOfWork => ServiceProvider.GetRequiredService<IUnitOfWork>();
 

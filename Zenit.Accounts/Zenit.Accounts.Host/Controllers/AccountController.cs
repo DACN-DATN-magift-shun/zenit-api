@@ -31,6 +31,7 @@ namespace Zenit.Accounts.Host.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(string id, [FromBody] AccountUpdateRequest request)
         {
 
@@ -38,6 +39,7 @@ namespace Zenit.Accounts.Host.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             var request = new AccountDeleteRequest { Id = id };

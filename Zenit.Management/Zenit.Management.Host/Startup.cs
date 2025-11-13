@@ -32,7 +32,7 @@ namespace Zenit.Management.Host
             services.AddAuthenticationService();
 
             services.AddCurrentAccount();
-            services.AddScoped(typeof(ManagementRepository<>));
+            services.AddScoped(typeof(IRepository<>), typeof(ManagementRepository<>));
             services.AddScoped<IUnitOfWork, ManagementUnitOfWork>();
             services.AddMapster();
 

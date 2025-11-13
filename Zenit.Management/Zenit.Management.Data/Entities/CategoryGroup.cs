@@ -1,7 +1,5 @@
-using System.Globalization;
-
-using Zenit.Management.Common.Enums;
 using Zenit.Management.Data.Models;
+using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Data.Entities
 {
@@ -9,6 +7,5 @@ namespace Zenit.Management.Data.Entities
     {
         public required string Name { get; set; }
         public required CategoryGroupType GroupType { get; set; }
-        public int? LimitAlertThreshold { get; set; }
     }
 }

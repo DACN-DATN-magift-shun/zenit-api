@@ -2,16 +2,16 @@ using System.Security.Claims;
 
 using Microsoft.AspNetCore.Http;
 
-using Zenit.Accounts.Common.Models;
+using Zenit.Management.Common.Models;
 using Zenit.Share.Host.Middlewares;
 
-
-namespace Zenit.Accounts.Business.Middlewares
+namespace Zenit.Management.Business.Middlewares
 {
-    public class CurrentAccountMiddleware(RequestDelegate next)
-        : CurrentAccountMiddlewareBase<CurrentAccount>(next)
+    public class ManagementCurrentAccountMiddleware(
+        RequestDelegate next
+    ) : CurrentAccountMiddlewareBase<ManagementCurrentAccount>(next)
     {
-        public override async Task InvokeAsync(HttpContext context, CurrentAccount currentAccount)
+        public override async Task InvokeAsync(HttpContext context, ManagementCurrentAccount currentAccount)
         {
             var user = context.User;
 

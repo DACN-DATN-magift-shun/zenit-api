@@ -21,12 +21,14 @@ namespace Zenit.Share.Data
             if (entity is ICreationAuditModel<TID> creationAuditModel)
             {
                 creationAuditModel.CreatedAt = DateTime.UtcNow;
+                creationAuditModel.CreatedById = AccountId;
             }
 
             if (entity is IDeletionAuditModel<TID> deletionAuditModel)
             {
                 deletionAuditModel.IsDeleted = false;
                 deletionAuditModel.DeletedAt = null;
+                deletionAuditModel.DeletedById = null;
             }
         }
 
@@ -35,6 +37,7 @@ namespace Zenit.Share.Data
             if (entity is IModificationAuditModel<TID> modificationAuditModel)
             {
                 modificationAuditModel.LastModifiedAt = DateTime.UtcNow;
+                modificationAuditModel.ModifiedById = AccountId;
             }
         }
 
@@ -42,6 +45,7 @@ namespace Zenit.Share.Data
         {
             if (entity is IDeletionAuditModel<TID> deletionAuditModel)
             {
+                deletionAuditModel.DeletedById = AccountId;
                 deletionAuditModel.IsDeleted = true;
                 deletionAuditModel.DeletedAt = DateTime.UtcNow;
                 return true;

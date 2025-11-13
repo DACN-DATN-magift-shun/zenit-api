@@ -12,7 +12,7 @@ using Zenit.Management.Data;
 namespace Zenit.Management.Migrator.Migrations
 {
     [DbContext(typeof(ManagementDbContext))]
-    [Migration("20251106141440_InitialCreation")]
+    [Migration("20251112163406_InitialCreation")]
     partial class InitialCreation
     {
         /// <inheritdoc />
@@ -43,8 +43,11 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ExpenseLimit")
-                        .HasColumnType("text");
+                    b.Property<float?>("ExpenseAlertThreshold")
+                        .HasColumnType("real");
+
+                    b.Property<long?>("ExpenseLimit")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uuid");
@@ -59,15 +62,15 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<short?>("LimitAlertThreshold")
-                        .HasColumnType("smallint");
-
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -101,9 +104,6 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<short?>("LimitAlertThreshold")
-                        .HasColumnType("smallint");
-
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
@@ -132,6 +132,57 @@ namespace Zenit.Management.Migrator.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ManagementSeederHistory");
+                });
+
+            modelBuilder.Entity("Zenit.Management.Data.Entities.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Transaction");
                 });
 #pragma warning restore 612, 618
         }

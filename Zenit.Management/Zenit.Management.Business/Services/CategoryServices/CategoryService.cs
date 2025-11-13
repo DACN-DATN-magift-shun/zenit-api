@@ -28,7 +28,6 @@ namespace Zenit.Management.Business.Services.CategoryServices
                 categoryGroup.Name,
                 categoryGroup.GroupType,
                 Categories = categories,
-                categoryGroup.LimitAlertThreshold
             };
 
             return Task.FromResult(Mapper.Map<GetCategoryGroupResponse>(response));

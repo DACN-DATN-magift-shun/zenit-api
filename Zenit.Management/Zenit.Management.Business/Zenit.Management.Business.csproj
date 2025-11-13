@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj" />
     <ProjectReference Include="..\Zenit.Management.Data\Zenit.Management.Data.csproj" />
     <ProjectReference Include="..\Zenit.Management.Contract\Zenit.Management.Contract.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Host\Zenit.Share.Host.csproj" />
   </ItemGroup>
 
   <ItemGroup>

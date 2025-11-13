@@ -1,4 +1,4 @@
-namespace Zenit.Management.Common.Enums
+namespace Zenit.Share.Common.Enums
 {
     public enum CategoryGroupType
     {
