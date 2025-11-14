@@ -7,9 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using RabbitMQ.Client;
+
 using Zenit.Share.Business.Interfaces;
 using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Interfaces;
+using Zenit.Share.Common.Services;
 
 
 namespace Zenit.Share.Host.Extensions
@@ -120,6 +123,41 @@ namespace Zenit.Share.Host.Extensions
                 });
             });
 
+            return services;
+        }
+
+        public static async Task<IServiceCollection> AddRabbitmqService(this IServiceCollection services)
+        {
+            var connectionFactory = new ConnectionFactory
+            {
+                HostName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_HOST) ?? "localhost",
+                UserName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_USERNAME) ?? "guest",
+                Password = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PASSWORD) ?? "guest",
+                Port = int.Parse(Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PORT) ?? "5672"),
+
+                RequestedHeartbeat = TimeSpan.FromSeconds(60),
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
+                RequestedConnectionTimeout = TimeSpan.FromSeconds(30)
+            };
+
+            var connection = await connectionFactory.CreateConnectionAsync();
+
+            services.AddSingleton<IConnectionFactory>(connectionFactory);
+            services.AddSingleton(connection);
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitmqProducerService(this IServiceCollection services)
+        {
+            services.AddScoped<RabbitmqProducerService>();
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitmqConsumerService(this IServiceCollection services)
+        {
+            services.AddScoped<RabbitmqConsumerService>();
             return services;
         }
     }

@@ -9,7 +9,7 @@ namespace Zenit.Management.Host
 {
     public class Startup(IConfiguration Configuration)
     {
-        public void ConfigureServices(IServiceCollection services)
+        public async Task ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
@@ -18,7 +18,7 @@ namespace Zenit.Management.Host
 
             services.AddCors();
             services.AddHttpClient();
-            
+
             services.AddDbContext<ManagementDbContext>();
 
             services.AddMediatR((configs) =>
@@ -35,6 +35,9 @@ namespace Zenit.Management.Host
             services.AddScoped(typeof(IRepository<>), typeof(ManagementRepository<>));
             services.AddScoped<IUnitOfWork, ManagementUnitOfWork>();
             services.AddMapster();
+
+            await services.AddRabbitmqService();
+            services.AddRabbitmqProducerService();
 
         }
 
