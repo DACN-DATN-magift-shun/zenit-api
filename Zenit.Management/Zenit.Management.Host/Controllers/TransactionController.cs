@@ -8,7 +8,7 @@ namespace Zenit.Management.Host.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class TransactionController : ManagementControllerBase
+    public class TransactionsController : ManagementControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetAll(GetAllTransactionRequest request)

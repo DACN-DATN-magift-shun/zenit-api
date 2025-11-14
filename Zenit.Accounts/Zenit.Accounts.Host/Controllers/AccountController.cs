@@ -8,7 +8,7 @@ namespace Zenit.Accounts.Host.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AccountController : AccountControllerBase
+    public class AccountsController : AccountControllerBase
     {
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] AccountCreateRequest request)

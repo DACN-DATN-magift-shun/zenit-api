@@ -8,7 +8,7 @@ namespace Zenit.Management.Host.Controller
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class CategoryController : ManagementControllerBase
+    public class CategoriesController : ManagementControllerBase
     {
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategory(Guid id)
