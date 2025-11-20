@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Zenit.Management.Contract.Requests.CategoryRequests;
+using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Host.Controller
 {
@@ -17,10 +18,10 @@ namespace Zenit.Management.Host.Controller
             return await GetRequest<GetCategoryRequest, GetCategoryResponse>(request);
         }
 
-        [HttpGet("groups/{groupId}")]
-        public async Task<IActionResult> GetCategoryGroup(Guid groupId)
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryGroup([FromQuery] CategoryGroupType groupType)
         {
-            var request = new GetCategoryGroupRequest { GroupId = groupId };
+            var request = new GetCategoryGroupRequest { GroupType = groupType };
             return await GetRequest<GetCategoryGroupRequest, GetCategoryGroupResponse>(request);
         }
 

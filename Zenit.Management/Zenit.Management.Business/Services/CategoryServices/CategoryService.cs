@@ -9,7 +9,6 @@ namespace Zenit.Management.Business.Services.CategoryServices
     public class CategoryService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {
         private CategoryManager _CategoryManager => GetService<CategoryManager>();
-        private CategoryGroupManager _CategoryGroupManager => GetService<CategoryGroupManager>();
 
         public Task<GetCategoryResponse> GetCategory(GetCategoryRequest request)
         {
@@ -20,13 +19,12 @@ namespace Zenit.Management.Business.Services.CategoryServices
 
         public Task<GetCategoryGroupResponse> GetCategoryGroup(GetCategoryGroupRequest request)
         {
-            var categoryGroup = _CategoryGroupManager.FindBy(c => c.Id == request.GroupId).FirstOrDefault();
-            var categories = _CategoryManager.FindBy(c => c.GroupId == request.GroupId).ToList();
+            var categories = _CategoryManager.FindBy(c => c.GroupType == request.GroupType).ToList();
 
             var response = new
             {
-                categoryGroup.Name,
-                categoryGroup.GroupType,
+                Name = request.GroupType,
+                Type = (int)request.GroupType,
                 Categories = categories,
             };
 

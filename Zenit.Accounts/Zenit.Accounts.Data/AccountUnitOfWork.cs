@@ -5,8 +5,7 @@ using Zenit.Share.Data;
 namespace Zenit.Accounts.Data
 {
     public class AccountUnitOfWork(
-        AccountDbContext context,
-        IPublisher publisher) : UnitOfWorkBase<AccountDbContext>(context, publisher)
+        AccountDbContext context) : UnitOfWorkBase<AccountDbContext>(context)
     {
     }
 }

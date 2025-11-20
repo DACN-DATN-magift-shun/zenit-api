@@ -1,5 +1,7 @@
 using MediatR;
 
+using Zenit.Share.Common.Enums;
+
 namespace Zenit.Management.Contract.Requests.CategoryRequests
 {
     public class GetCategoryRequest : IRequest<GetCategoryResponse>
@@ -13,6 +15,6 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
         public required string Icon { get; set; }
         public int? ExpenseLimit { get; set; }
         public float? ExpenseAlertThreshold { get; set; }
-        public required Guid GroupId { get; set; }
+        public required CategoryGroupType GroupType { get; set; }
     }
 }

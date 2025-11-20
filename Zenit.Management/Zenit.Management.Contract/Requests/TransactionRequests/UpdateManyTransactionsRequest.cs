@@ -9,6 +9,6 @@ namespace Zenit.Management.Contract.TransactionRequests
 
     public class UpdateManyTransactionsResponse
     {
-        public required List<TransactionResponse> Transactions { get; set; }
+        public required List<CreateTransactionResponse> Transactions { get; set; }
     }
 }

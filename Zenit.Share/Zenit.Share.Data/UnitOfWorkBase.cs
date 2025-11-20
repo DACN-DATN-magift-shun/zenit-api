@@ -5,17 +5,14 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-using Zenit.Share.Data.Events.Requests;
-using Zenit.Share.Data.Helpers;
 using Zenit.Share.Data.Interfaces;
-using Zenit.Share.Data.Values;
+using Zenit.Share.Data.Models;
 
 
 namespace Zenit.Share.Data
 {
     public abstract class UnitOfWorkBase<TContext>(
-        TContext context,
-        IPublisher publisher
+        TContext context
     ) : IUnitOfWork
         where TContext : DbContext
     {
@@ -42,68 +39,32 @@ namespace Zenit.Share.Data
 
         public async Task SaveChangesAsync()
         {
-            var states = new[] {
-                EntityState.Added,
-                EntityState.Modified,
-                EntityState.Deleted
-            };
+            var states = new List<EntityState> { EntityState.Added, EntityState.Modified, EntityState.Deleted };
 
             var entries = context.ChangeTracker.Entries()
                 .Where(e => states.Contains(e.State))
                 .ToList();
-
+            
             var changedEntities = entries.Where(e => e.Entity is IDataModel)
-                .Select(e => new AuditEntityChange
-                {
-                    State = e.State,
-                    Entity = e.CurrentValues.ToObject(),
-                    FieldChanges = EntityHelper.GetAuditFieldChanges(e)
-                })
-                .ToList();
+            .Select(e => new changedEntity
+            {
+                EntityCurrentValues = e.CurrentValues.ToObject(),
+                EntityState = e.State
+            }).ToList();
 
             await context.SaveChangesAsync();
 
-            await PublishEventRequestsAsync(changedEntities);
+            await AfterSaveChangesAsync(changedEntities);
         }
 
-        private async Task PublishEventRequestsAsync(List<AuditEntityChange> changedEntities)
+        public async Task AfterSaveChangesAsync(List<changedEntity> changedEntities)
         {
-            try
-            {
-                foreach (var entity in changedEntities)
-                {
-                    var IsDeleted = entity.FieldChanges?.FirstOrDefault(e => e.Field == "IsDeleted")?.NewValue;
+            if (changedEntities == null)
+                return;
 
-                    if (entity.State == EntityState.Added)
-                    {
-                        var entityEventType = typeof(EntityCreationEventRequest<>)
-                                            .MakeGenericType(entity.Entity!.GetType());
-                        await publisher.Publish(
-                            Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-                        );
-                    }
-                    else if (entity.State == EntityState.Modified && IsDeleted!.Equals(true))
-                    {
-                        var entityEventType = typeof(EntityDeletionEventRequest<>)
-                                            .MakeGenericType(entity.Entity!.GetType());
-                        await publisher.Publish(
-                            Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-                        );
-                    }
-                    else if (entity.State == EntityState.Modified && IsDeleted!.Equals(false))
-                    {
-                        var entityEventType = typeof(EntityModificationEventRequest<>)
-                                            .MakeGenericType(entity.Entity!.GetType());
-                        await publisher.Publish(
-                            Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-                        );
-                    }
-
-                }
-            }
-            catch (Exception ex)
+            foreach (var changedEntity in changedEntities)
             {
-                Console.WriteLine(ex);
+                // Implement custom logic for each changed entity
             }
         }
     }

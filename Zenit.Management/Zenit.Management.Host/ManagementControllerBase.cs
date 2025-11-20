@@ -17,6 +17,7 @@ namespace Zenit.Management.Host
                 return BadRequest(ModelState);
             }
             var response = await Mediator.Send(request);
+            
             return Ok(response);
         }
 

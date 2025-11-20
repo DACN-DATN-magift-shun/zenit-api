@@ -32,7 +32,6 @@ namespace Zenit.Management.Host.Controllers
             return await CreateRequest<CreateTransactionRequest, CreateTransactionResponse>(request);
         }
 
-        // not work
         [HttpPost("many")]
         public async Task<IActionResult> CreateMany([FromBody] CreateManyTransactionsRequest request)
         {
@@ -59,7 +58,6 @@ namespace Zenit.Management.Host.Controllers
             return await DeleteRequest(request);
         }
 
-        // not work
         [HttpPatch]
         public async Task<IActionResult> UpdateMany([FromBody] UpdateManyTransactionsRequest request)
         {

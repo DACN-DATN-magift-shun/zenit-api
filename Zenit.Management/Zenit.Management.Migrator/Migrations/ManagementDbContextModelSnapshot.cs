@@ -17,7 +17,10 @@ namespace Zenit.Management.Migrator.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -46,8 +49,8 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<long?>("ExpenseLimit")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("GroupType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Icon")
                         .IsRequired()
@@ -111,6 +114,47 @@ namespace Zenit.Management.Migrator.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CategoryGroup");
+                });
+
+            modelBuilder.Entity("Zenit.Management.Data.Entities.CategoryGroupExpenseAlertThreshold", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("GroupType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<float?>("Threshold")
+                        .HasColumnType("real");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryGroupExpenseAlertThreshold");
                 });
 
             modelBuilder.Entity("Zenit.Management.Data.Entities.ManagementSeederHistory", b =>
@@ -179,7 +223,20 @@ namespace Zenit.Management.Migrator.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Transaction");
+                });
+
+            modelBuilder.Entity("Zenit.Management.Data.Entities.Transaction", b =>
+                {
+                    b.HasOne("Zenit.Management.Data.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

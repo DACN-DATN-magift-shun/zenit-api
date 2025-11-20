@@ -1,8 +1,9 @@
+using Zenit.Management.Data.Models;
 using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Data.Entities
 {
-    public class CategoryGroupExpenseAlertThreshold
+    public class CategoryGroupExpenseAlertThreshold : ManagementAuditModel
     {
         public required Guid Id { get; set; }
         public required CategoryGroupType GroupType { get; set; }

@@ -18,7 +18,8 @@ namespace Zenit.Share.Data
                 return;
             }
 
-            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            optionsBuilder.UseLazyLoadingProxies();
+            // optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
             optionsBuilder.UseNpgsql(
                 this.ConnectionString,

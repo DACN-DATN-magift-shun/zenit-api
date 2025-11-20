@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Common\Zenit.Share.Common.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj" />
+    <ProjectReference Include="..\Zenit.Statistics.Common\Zenit.Statistics.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+  </ItemGroup>
 </Project>
