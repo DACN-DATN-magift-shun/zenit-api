@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Zenit.Statistics.Data;
@@ -11,9 +12,11 @@ using Zenit.Statistics.Data;
 namespace Zenit.Statistics.Migrator.Migrations
 {
     [DbContext(typeof(StatisticsDbContext))]
-    partial class StatisticsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251121142329_AddUniqueIndexForTableCategoryGroupDailyStatistics")]
+    partial class AddUniqueIndexForTableCategoryGroupDailyStatistics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,6 +79,9 @@ namespace Zenit.Statistics.Migrator.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Date", "CategoryId")
+                        .IsUnique();
+
+                    b.HasIndex("Date", "GroupId")
                         .IsUnique();
 
                     b.ToTable("CategoryDailyStatistics");

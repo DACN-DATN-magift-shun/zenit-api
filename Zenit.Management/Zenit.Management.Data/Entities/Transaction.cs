@@ -10,6 +10,6 @@ namespace Zenit.Management.Data.Entities
         public required DateTime TransactionDate { get; set; }
         public required Guid CategoryId { get; set; }
         public virtual Category? Category { get; set; }
-        public required Guid UserId { get; set; }
+        public required Guid AccountId { get; set; }
     }
 }

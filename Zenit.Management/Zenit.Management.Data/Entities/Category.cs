@@ -10,6 +10,6 @@ namespace Zenit.Management.Data.Entities
         public long? ExpenseLimit { get; set; }
         public float? ExpenseAlertThreshold { get; set; }
         public required CategoryGroupType GroupType { get; set; }
-        public required Guid UserId { get; set; }
+        public required Guid AccountId { get; set; }
     }
 }

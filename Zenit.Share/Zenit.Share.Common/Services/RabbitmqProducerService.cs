@@ -16,11 +16,11 @@ namespace Zenit.Share.Common.Services
 
     public class RabbitmqProducerService(IConnection connection) : IRabbitmqProducer
     {
-        IChannel? _channel;
+        // IChannel? _channel;
 
         public async Task PublishMessageAsync(RabbitmqProducerRequest request)
         {
-            _channel =  await connection.CreateChannelAsync();
+            using var _channel =  await connection.CreateChannelAsync();
 
             await _channel.ExchangeDeclareAsync(
                 exchange: request.Exchange,

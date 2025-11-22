@@ -35,7 +35,7 @@ namespace Zenit.Share.Data
 
         public GridReader QueryMultipleResults(string sql, object? param = null)
         {
-            var connection = GetConnection();
+            using var connection = GetConnection();
             connection.Open();
             var result = connection.QueryMultiple(sql, param);
             return result;
@@ -43,7 +43,7 @@ namespace Zenit.Share.Data
 
         public void Execute(string sql, object? param = null)
         {
-            var connection = GetConnection();
+            using var connection = GetConnection();
             connection.Open();
             connection.Execute(sql, param);
         }

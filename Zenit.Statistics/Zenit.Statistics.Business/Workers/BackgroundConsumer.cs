@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Zenit.Share.Common.Services;
 using Zenit.Share.Data.Interfaces;
+using Zenit.Statistics.Business.Helpers;
 using Zenit.Statistics.Data.Entities;
 using Zenit.Statistics.Data.Models;
 
@@ -31,7 +32,6 @@ namespace Zenit.Statistics.Business.Workers
             // ✅ Đăng ký consumer CHỈ 1 LẦN - không cần while loop
             var consumerTasks = new[]
             {
-                // Consumer cho transaction.created
                 Task.Run(async () =>
                 {
                     try
@@ -51,25 +51,12 @@ namespace Zenit.Statistics.Business.Workers
 
                                     var transactions = JsonSerializer.Deserialize<List<TransactionModel>>(bodyString);
 
-                                    if (transactions == null || !transactions.Any())
-                                    {
-                                        _logger.LogWarning("Received empty or null transaction list");
-                                        return;
-                                    }
-
-                                    using var scope = _serviceProvider.CreateScope();
+                                    var scope = _serviceProvider.CreateScope();
                                     var dapperQuery = scope.ServiceProvider.GetRequiredService<DapperQueryService>();
-                                    // var repository = scope.ServiceProvider.GetRequiredService<IRepository<TransactionStatistics>>();
-                                    // var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
                                     foreach (var transaction in transactions)
                                     {
-                                        string sql = @" 
-                                            INSERT INTO ""TransactionStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""CategoryId"", ""AccountId"", ""GroupType"", ""CreatedAt"", ""IsDeleted"")
-                                            VALUES (@Id, @Date, @TotalAmount, @CategoryId, @AccountId, @GroupType, NOW(), FALSE)
-                                            ON CONFLICT (""Date"", ""CategoryId"")
-                                            DO UPDATE SET ""TotalAmount"" = ""TransactionStatistics"".""TotalAmount"" + EXCLUDED.""TotalAmount"";
-                                        ";
+                                        string sql = SqlHelper.UpsertDailyStatistics();
 
                                         var parameters = new
                                         {
@@ -78,21 +65,13 @@ namespace Zenit.Statistics.Business.Workers
                                             CategoryId = transaction.CategoryId,
                                             AccountId = transaction.AccountId,
                                             GroupType = transaction.GroupType,
-                                            Id = Guid.NewGuid()
+                                            CategoryStatsId = Guid.NewGuid(),
+                                            CategoryGroupStatsId = Guid.NewGuid(),
+                                            CreatedById = transaction.AccountId,
+                                            ModifiedById = transaction.AccountId,
                                         };
 
                                         dapperQuery.Execute(sql, parameters);
-                                        // var transactionStatistics = new TransactionStatistics
-                                        // {
-                                        //     Date = transaction.TransactionDate,
-                                        //     TotalAmount = transaction.Amount,
-                                        //     CategoryId = transaction.CategoryId,
-                                        //     AccountId = transaction.AccountId,
-                                        //     GroupType = transaction.GroupType,
-                                        // };
-
-                                        // repository.Add(transactionStatistics);
-                                        // await unitOfWork.SaveChangesAsync();
 
                                     }
 

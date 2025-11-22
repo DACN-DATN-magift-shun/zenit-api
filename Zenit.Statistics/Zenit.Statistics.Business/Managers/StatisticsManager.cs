@@ -3,7 +3,7 @@ using Zenit.Statistics.Data.Entities;
 
 namespace Zenit.Statistics.Business.Managers
 {
-    public class StatisticsManager(IRepository<TransactionStatistics> repository) : StatisticsDomainService<TransactionStatistics>(repository)
+    public class StatisticsManager(IRepository<CategoryDailyStatistics> repository) : StatisticsDomainService<CategoryDailyStatistics>(repository)
     {
     }
 }

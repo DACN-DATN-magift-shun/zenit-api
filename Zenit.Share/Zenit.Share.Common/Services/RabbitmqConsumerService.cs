@@ -20,8 +20,8 @@ namespace Zenit.Share.Common.Services
         public async Task ConsumeMessageAsync(
             AsyncEventHandler<BasicDeliverEventArgs> callback, RabbitmqConsumerRequest request)
         {
-            
-            channel = await InititalizeConsumerAsync(request);
+            if (channel == null || channel.IsClosed)
+                channel = await InititalizeConsumerAsync(request);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
 

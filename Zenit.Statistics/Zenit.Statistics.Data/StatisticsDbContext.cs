@@ -14,15 +14,26 @@ namespace Zenit.Statistics.Data
             MigrationAssembly = GetMigrationAssembly();
         }
 
-        public string GetConnectionString()
+        public static string GetConnectionString()
         {
-            var connectionName = EnvConstants.STATISTICS_CONNECTION ?? throw new Exception("Connection Name is not set.");
-            Console.WriteLine($"Using connection name: {connectionName}");
-            var connectionString = Environment.GetEnvironmentVariable(connectionName) ?? throw new Exception("Connection String is not set.");
+            var connectionName = EnvConstants.STATISTICS_CONNECTION;
+
+            if (string.IsNullOrEmpty(connectionName))
+            {
+                throw new InvalidOperationException($"Connection Name is not set.");
+            }
+
+            var connectionString = Environment.GetEnvironmentVariable(connectionName);
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException($"Connection string for '{connectionName}' is not set.");
+            }
+
             return connectionString;
         }
 
-        public string GetMigrationAssembly()
+        public static string GetMigrationAssembly()
         {
             return "Zenit.Statistics.Migrator";
         }

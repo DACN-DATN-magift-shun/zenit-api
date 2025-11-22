@@ -16,12 +16,12 @@ namespace Zenit.Management.Business.Services.TransactionService
     public class TransactionService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {
         public TransactionManager _TransactionManager => ServiceProvider.GetService<TransactionManager>();
-    
+
         public RabbitmqProducerService _RabbitmqProducerService => ServiceProvider.GetService<RabbitmqProducerService>();
 
         public Task<GetAllTransactionResponse> GetAll(GetAllTransactionRequest request)
         {
-            var transactions = _TransactionManager.GetAll().Where(t => t.UserId == CurrentAccount.Id).ToList();
+            var transactions = _TransactionManager.GetAll().Where(t => t.AccountId == CurrentAccount.Id).ToList();
             return Task.FromResult(Mapper.Map<GetAllTransactionResponse>(transactions));
         }
 
@@ -36,13 +36,13 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             var transaction = Mapper.Map<Transaction>(request);
             transaction.Id = Guid.NewGuid();
-            transaction.UserId = CurrentAccount.Id;
+            transaction.AccountId = CurrentAccount.Id;
             _TransactionManager.Add(transaction);
-
+        
             await UnitOfWork.SaveChangesAsync();
 
             var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
-                                                        .Include(t => t.Category) 
+                                                        .Include(t => t.Category)
                                                         .FirstOrDefault();
 
             var transactionPublishedList = new TransactionPublishedModel
@@ -50,13 +50,12 @@ namespace Zenit.Management.Business.Services.TransactionService
                 Amount = transaction.Amount,
                 TransactionDate = transaction.TransactionDate,
                 CategoryId = transaction.CategoryId,
-                AccountId = transaction.UserId,
+                AccountId = transaction.AccountId,
                 GroupType = trackedTransaction.Category.GroupType
             };
 
-            var Body = JsonSerializer.Serialize(new[] { transactionPublishedList });
-
-            try {
+            try
+            {
                 await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
                 {
                     Exchange = "transaction.direct.create",
@@ -64,10 +63,14 @@ namespace Zenit.Management.Business.Services.TransactionService
                     Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
                     ExchangeType = "direct"
                 });
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 // Log the exception (implementation depends on your logging framework)
                 throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
             }
+
+            
 
             return Mapper.Map<CreateTransactionResponse>(transaction);
         }
@@ -82,7 +85,7 @@ namespace Zenit.Management.Business.Services.TransactionService
             {
                 var newTransaction = Mapper.Map<Transaction>(transaction);
                 newTransaction.Id = Guid.NewGuid();
-                newTransaction.UserId = CurrentAccount.Id;
+                newTransaction.AccountId = CurrentAccount.Id;
 
                 addedTransactions.Add(newTransaction);
                 response.Add(Mapper.Map<CreateTransactionResponse>(newTransaction));

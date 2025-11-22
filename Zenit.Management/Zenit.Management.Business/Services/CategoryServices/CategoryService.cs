@@ -35,6 +35,7 @@ namespace Zenit.Management.Business.Services.CategoryServices
         {
             var category = Mapper.Map<Category>(request);
             category.Id = Guid.NewGuid();
+            category.AccountId = CurrentAccount.Id;
 
             _CategoryManager.Add(category);
             await UnitOfWork.SaveChangesAsync();
