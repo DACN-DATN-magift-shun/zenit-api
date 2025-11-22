@@ -12,7 +12,7 @@ namespace Zenit.Statistics.Contract.Requests
 
     public class StatisticsGetAllResponse
     {
-       IEnumerable<StatisticsResponseItem> Items { get; set; } = [];
+       public IEnumerable<StatisticsResponseItem> Items { get; set; } = [];
     }
 
     public class StatisticsResponseItem
@@ -21,7 +21,7 @@ namespace Zenit.Statistics.Contract.Requests
         public float? Percentage { get; set; }
         public float? PercentageChange { get; set; }
         public CategoryGroupType? GroupType { get; set; }
-        public IEnumerable<CategoryStatistics> Details { get; set; } = [];
+        public IEnumerable<CategoryStatistics> Categories { get; set; } = [];
     }
 
     public class CategoryStatistics
@@ -29,6 +29,6 @@ namespace Zenit.Statistics.Contract.Requests
         public required long TotalAmount { get; set; }
         public float? Percentage { get; set; }
         public float? PercentageChange { get; set; }
-        public Guid? CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

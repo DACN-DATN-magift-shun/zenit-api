@@ -1,7 +1,12 @@
 using System.Text.Json;
 
+using Dapper;
+
 using Microsoft.Extensions.DependencyInjection;
 
+using Npgsql;
+
+using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Services;
 using Zenit.Statistics.Business.Helpers;
 using Zenit.Statistics.Contract.Requests;
@@ -35,106 +40,15 @@ namespace Zenit.Statistics.Business.Services
                 previousToDate = toDate.AddDays(-intervalByDays);
             }
 
-            string sql = @"
-                WITH CurrentIntervalTotalValue AS (
-                    SELECT 
-                        SUM(TotalAmount) AS TotalAmount
-                    FROM TransactionStatistics
-                    WHERE Date >= @fromDate AND Date <= @toDate 
-                ), CurrentIntervalGroupTypeValue AS (
-                    SELECT 
-                        GroupType,
-                        NULL AS CategoryId,
-                        SUM(TotalAmount) AS TotalAmount
-                    FROM TransactionStatistics
-                    WHERE Date >= @fromDate AND Date <= @toDate 
-                    GROUP BY GroupType
-                ), PreviousIntervalGroupTypeValue AS (
-                    SELECT 
-                        GroupType,
-                        NULL AS CategoryId,
-                        SUM(TotalAmount) AS TotalAmount
-                    FROM TransactionStatistics
-                    WHERE Date >= @previousFromDate AND Date <= @previousToDate 
-                    GROUP BY GroupType
-                ), CurrentIntervalCategoryValue AS (
-                    SELECT
-                        GroupType,
-                        CategoryId,
-                        SUM(TotalAmount) AS TotalAmount
-                    FROM TransactionStatistics
-                    WHERE Date >= @fromDate AND Date <= @toDate 
-                    GROUP BY GroupType, CategoryId
-                ), PreviousIntervalCategoryValue AS (
-                    SELECT
-                        GroupType,
-                        CategoryId,
-                        SUM(TotalAmount) AS TotalAmount
-                    FROM TransactionStatistics
-                    WHERE Date >= @previousFromDate AND Date <= @previousToDate 
-                    GROUP BY GroupType, CategoryId
-                ), GroupTypeStatistics AS (
-                    SELECT
-                        c.GroupType,
-                        c.TotalAmount,
-                        ROUND((c.TotalAmount / t.TotalAmount) * 100, 2) AS Percentage,
-                        ROUND(
-                            CASE 
-                                WHEN p.TotalAmount IS NULL OR p.TotalAmount = 0 THEN 100.0
-                                ELSE ((c.TotalAmount - p.TotalAmount) / p.TotalAmount) * 100
-                            END, 2
-                        ) AS PercentageChange
-                    FROM CurrentIntervalGroupTypeValue c
-                    CROSS JOIN CurrentIntervalTotalValue t
-                    LEFT JOIN PreviousIntervalGroupTypeValue p
-                    ON c.GroupType = p.GroupType
-                ), CategoryStatistics AS (
-                    SELECT
-                        c.GroupType,
-                        c.CategoryId,
-                        c.TotalAmount,
-                        ROUND((c.TotalAmount / gt.TotalAmount) * 100, 2) AS Percentage,
-                        ROUND(
-                            CASE 
-                                WHEN p.TotalAmount IS NULL OR p.TotalAmount = 0 THEN 100.0
-                                ELSE ((c.TotalAmount - p.TotalAmount) / p.TotalAmount) * 100
-                            END, 2
-                        ) AS PercentageChange
-                    FROM CurrentIntervalCategoryValue c
-                    LEFT JOIN PreviousIntervalCategoryValue p
-                        ON c.GroupType = p.GroupType AND c.CategoryId = p.CategoryId
-                    INNER JOIN CurrentIntervalGroupTypeValue gt
-                        ON c.GroupType = gt.GroupType
-                ) 
-                SELECT json_agg (
-                    json_build_object (
-                        'TotalAmount', gt.TotalAmount,
-                        'Percentage', gt.Percentage,
-                        'PercentageChange', gt.PercentageChange,
-                        'GroupType', gt.GroupType,
-                        'Details', (
-                            SELECT json_agg (
-                                json_build_object (
-                                    'CategoryId', cs.CategoryId,
-                                    'TotalAmount', cs.TotalAmount,
-                                    'Percentage', cs.Percentage,
-                                    'PercentageChange', cs.PercentageChange
-                                )
-                            )
-                            FROM CategoryStatistics cs
-                            WHERE cs.GroupType = gt.GroupType
-                        )
-                    )
-                ) as Items
-                FROM GroupTypeStatistics gt;
-            ";
+            string sql = SqlHelper.GetAllStatisticsBySpecificInterval();
 
             var parameters = new
             {
-                fromDate,
-                toDate,
-                previousFromDate,
-                previousToDate
+                FromDate = fromDate,
+                ToDate = toDate,
+                PreviousFromDate = previousFromDate,
+                PreviousToDate = previousToDate,
+                AccountId = CurrentAccount.Id
             };
 
             var cacheKey = $"{sql}{JsonSerializer.Serialize(parameters)}";
@@ -148,11 +62,28 @@ namespace Zenit.Statistics.Business.Services
 
             var sqlResult = DapperQueryService.QuerySingle<string>(sql, parameters);
 
-            var result = JsonSerializer.Deserialize<StatisticsGetAllResponse>(sqlResult);
+            Console.WriteLine("✅ SQL Result: " + sqlResult);
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var result = new StatisticsGetAllResponse
+            {
+                Items = JsonSerializer.Deserialize<IEnumerable<StatisticsResponseItem>>(sqlResult, jsonOptions) ?? []
+            };
 
             await RedisCache.AddAsync(md5CacheKey, result, DateTimeOffset.UtcNow.AddMinutes(5));
 
-            return result;
+            var first = result.Items.FirstOrDefault();
+            if (first != null)
+            {
+                Console.WriteLine($"First TotalAmount={first.TotalAmount}, Percentage={first.Percentage}, GroupType={first.GroupType}");
+                Console.WriteLine("Categories: " + JsonSerializer.Serialize(first.Categories, new JsonSerializerOptions { WriteIndented = true }));
+            }
+
+            return Mapper.Map<StatisticsGetAllResponse>(result); 
         }
     }
 }

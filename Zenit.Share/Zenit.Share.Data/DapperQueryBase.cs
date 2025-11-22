@@ -47,5 +47,12 @@ namespace Zenit.Share.Data
             connection.Open();
             connection.Execute(sql, param);
         }
+
+        public T QueryScalar<T>(string sql, object? param = null)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            return connection.ExecuteScalar<T>(sql, param);
+        }
     }
 }

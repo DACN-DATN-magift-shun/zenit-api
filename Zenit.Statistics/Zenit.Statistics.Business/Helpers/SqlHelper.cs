@@ -129,14 +129,135 @@ namespace Zenit.Statistics.Business.Helpers
             ";
         }
 
-        public static string UpsertWeeklyStatistics()
+        public static string GetAllStatisticsBySpecificInterval()
         {
-            return @"";
-        }
-
-        public static string UpsertMonthlyStatistics()
-        {
-            return @"";
+            return @"
+                WITH IntervalTotals AS (
+                SELECT
+                    SUM(""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryGroupDailyStatistics""
+                WHERE DATE(""Date"") >= DATE(@FromDate) 
+                    AND DATE(""Date"") <= DATE(@ToDate) 
+                    AND ""AccountId"" = @AccountId
+            ),
+            PreviousIntervalTotals AS (
+                SELECT
+                    SUM(""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryGroupDailyStatistics""
+                WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
+                    AND DATE(""Date"") <= DATE(@PreviousToDate) 
+                    AND ""AccountId"" = @AccountId
+            ),
+            GroupTypeStats AS (
+                SELECT
+                    ""GroupType"",
+                    SUM(""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryGroupDailyStatistics""
+                WHERE DATE(""Date"") >= DATE(@FromDate) 
+                    AND DATE(""Date"") <= DATE(@ToDate) 
+                    AND ""AccountId"" = @AccountId
+                GROUP BY ""GroupType""
+            ),
+            PreviousGroupTypeStats AS (
+                SELECT
+                    ""GroupType"",
+                    SUM(""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryGroupDailyStatistics""
+                WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
+                    AND DATE(""Date"") <= DATE(@PreviousToDate) 
+                    AND ""AccountId"" = @AccountId
+                GROUP BY ""GroupType""
+            ),
+            GroupTypeValues AS (
+                SELECT
+                    gts.""GroupType"",
+                    gts.TotalAmount,
+                    CASE 
+                        WHEN it.TotalAmount = 0 OR it.TotalAmount IS NULL THEN 0
+                        ELSE (gts.TotalAmount * 100.0) / it.TotalAmount
+                    END AS Percentage,
+                    CASE 
+                        WHEN pgts.TotalAmount IS NULL OR pgts.TotalAmount = 0 THEN 100.0
+                        ELSE ((gts.TotalAmount - pgts.TotalAmount) * 100.0) / pgts.TotalAmount
+                    END AS PercentageChange
+                FROM GroupTypeStats gts
+                CROSS JOIN IntervalTotals it
+                LEFT JOIN PreviousGroupTypeStats pgts ON gts.""GroupType"" = pgts.""GroupType""
+            ),
+            CategoryStats AS (
+                SELECT
+                    c.""GroupType"",
+                    c.""Name"" AS CategoryName,
+                    SUM(cds.""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryDailyStatistics"" cds
+                INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
+                WHERE DATE(""Date"") >= DATE(@FromDate) 
+                    AND DATE(""Date"") <= DATE(@ToDate) 
+                    AND cds.""AccountId"" = @AccountId
+                    AND c.""AccountId"" = @AccountId
+                    AND c.""IsDeleted"" = false
+                GROUP BY c.""GroupType"", c.""Name"", c.""Id""
+            ),
+            PreviousCategoryStats AS (
+                SELECT
+                    c.""GroupType"",
+                    c.""Name"" AS CategoryName,
+                    SUM(cds.""TotalAmount"") AS TotalAmount
+                FROM zenit_statistics_dev.""CategoryDailyStatistics"" cds
+                INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
+                WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
+                    AND DATE(""Date"") <= DATE(@PreviousToDate) 
+                    AND cds.""AccountId"" = @AccountId
+                    AND c.""AccountId"" = @AccountId
+                    AND c.""IsDeleted"" = false
+                GROUP BY c.""GroupType"", c.""Name"", c.""Id""
+            ),
+            CategoryValues AS (
+                SELECT
+                    cs.""GroupType"",
+                    cs.CategoryName,
+                    cs.TotalAmount,
+                    CASE 
+                        WHEN gtv.TotalAmount = 0 OR gtv.TotalAmount IS NULL THEN 0
+                        ELSE (cs.TotalAmount * 100.0) / gtv.TotalAmount
+                    END AS Percentage,
+                    CASE 
+                        WHEN pcs.TotalAmount IS NULL OR pcs.TotalAmount = 0 THEN 100.0
+                        ELSE ((cs.TotalAmount - pcs.TotalAmount) * 100.0) / pcs.TotalAmount
+                    END AS PercentageChange
+                FROM CategoryStats cs
+                INNER JOIN GroupTypeValues gtv ON cs.""GroupType"" = gtv.""GroupType""
+                LEFT JOIN PreviousCategoryStats pcs ON cs.""GroupType"" = pcs.""GroupType"" AND cs.CategoryName = pcs.CategoryName
+            )
+            SELECT 
+                COALESCE(
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'GroupType', gtv.""GroupType"",
+                            'TotalAmount', gtv.TotalAmount,
+                            'Percentage', ROUND(CAST(gtv.Percentage AS numeric), 2),
+                            'PercentageChange', ROUND(CAST(gtv.PercentageChange AS numeric), 2),
+                            'Categories', COALESCE(
+                                (
+                                    SELECT jsonb_agg(
+                                        jsonb_build_object(
+                                            'CategoryName', cv.CategoryName,
+                                            'TotalAmount', cv.TotalAmount,
+                                            'Percentage', ROUND(CAST(cv.Percentage AS numeric), 2),
+                                            'PercentageChange', ROUND(CAST(cv.PercentageChange AS numeric), 2)
+                                        )
+                                    )
+                                    FROM CategoryValues cv
+                                    WHERE cv.""GroupType"" = gtv.""GroupType""
+                                ),
+                                '[]'::jsonb
+                            )
+                        )
+                    ),
+                    '[]'::jsonb
+                )
+            FROM GroupTypeValues gtv;
+            ";
         }
     }
 }

@@ -9,13 +9,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Data\Zenit.Share.Data.csproj" />
     <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Business\Zenit.Share.Business.csproj" />
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Host\Zenit.Share.Host.csproj" />
     <ProjectReference Include="..\Zenit.Statistics.Data\Zenit.Statistics.Data.csproj" />
     <ProjectReference Include="..\Zenit.Statistics.Common\Zenit.Statistics.Common.csproj" />
     <ProjectReference Include="..\Zenit.Statistics.Contract\Zenit.Statistics.Contract.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
