@@ -31,7 +31,7 @@ namespace Zenit.Accounts.Business.Services
         public async Task<AccountLoginResponse> Login(AccountLoginRequest request)
         {
             var account = _AccountManager.GetAll()
-                .FirstOrDefault(current => current.Email == request.Email)
+                .FirstOrDefault(current => current.Email == request.Email && current.IsDeleted == false)
                 ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
 
             var password = Convert.FromBase64String(account.Password);
