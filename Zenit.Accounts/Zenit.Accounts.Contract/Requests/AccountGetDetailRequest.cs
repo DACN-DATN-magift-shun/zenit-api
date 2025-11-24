@@ -7,8 +7,7 @@ namespace Zenit.Accounts.Contract.Requests
 {
     public class AccountGetDetailRequest : IRequest<AccountGetDetailResponse>
     {
-        [FromRoute]
-        public required string Id { get; set; }
+        // No properties needed as we will get the user info from the authentication context
     }
 
     public class AccountGetDetailResponse
