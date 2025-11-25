@@ -1,6 +1,6 @@
-using System.Transactions;
-
 using MediatR;
+
+using Zenit.Management.Data.Entities;
 
 namespace Zenit.Management.Contract.TransactionRequests
 {
@@ -10,6 +10,6 @@ namespace Zenit.Management.Contract.TransactionRequests
 
     public class GetAllTransactionResponse
     {
-        List<Transaction>? Transactions { get; set; }
+        public List<Transaction>? Transactions { get; set; }
     }
 }

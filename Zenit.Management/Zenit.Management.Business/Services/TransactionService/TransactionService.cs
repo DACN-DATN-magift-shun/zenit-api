@@ -22,57 +22,56 @@ namespace Zenit.Management.Business.Services.TransactionService
         public Task<GetAllTransactionResponse> GetAll(GetAllTransactionRequest request)
         {
             var transactions = _TransactionManager.GetAll().Where(t => t.AccountId == CurrentAccount.Id).ToList();
-            return Task.FromResult(Mapper.Map<GetAllTransactionResponse>(transactions));
+            return Task.FromResult(Mapper.Map<GetAllTransactionResponse>(new GetAllTransactionResponse { Transactions = transactions }));
         }
 
         public Task<GetDetailTransactionResponse> GetDetail(GetDetailTransactionRequest request)
         {
-            var transaction = _TransactionManager.FindBy(t => t.Id == request.Id).FirstOrDefault();
+            var transaction = _TransactionManager.FindBy(t => t.Id == request.Id && t.IsDeleted == false).FirstOrDefault();
             return Task.FromResult(Mapper.Map<GetDetailTransactionResponse>(transaction));
         }
 
-        public async Task<CreateTransactionResponse> Create(CreateTransactionRequest request)
+        public async Task<UpdateTransactionResponse> Create(CreateTransactionRequest request)
         {
 
             var transaction = Mapper.Map<Transaction>(request);
             transaction.Id = Guid.NewGuid();
             transaction.AccountId = CurrentAccount.Id;
             _TransactionManager.Add(transaction);
-        
+
             await UnitOfWork.SaveChangesAsync();
 
-            var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
-                                                        .Include(t => t.Category)
-                                                        .FirstOrDefault();
+            // var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+            //                                             .Include(t => t.Category)
+            //                                             .FirstOrDefault();
 
-            var transactionPublishedList = new TransactionPublishedModel
-            {
-                Amount = transaction.Amount,
-                TransactionDate = transaction.TransactionDate,
-                CategoryId = transaction.CategoryId,
-                AccountId = transaction.AccountId,
-                GroupType = trackedTransaction.Category.GroupType
-            };
+            // var transactionPublishedList = new TransactionPublishedModel
+            // {
+            //     Amount = transaction.Amount,
+            //     TransactionDate = transaction.TransactionDate,
+            //     CategoryId = transaction.CategoryId,
+            //     AccountId = transaction.AccountId,
+            //     GroupType = trackedTransaction.Category.GroupType
+            // };
 
-            try
-            {
-                await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-                {
-                    Exchange = "transaction.direct.create",
-                    RoutingKey = "transaction.created",
-                    Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
-                    ExchangeType = "direct"
-                });
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (implementation depends on your logging framework)
-                throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
-            }
+            // try
+            // {
+            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            //     {
+            //         Exchange = "transaction.direct.create",
+            //         RoutingKey = "transaction.created",
+            //         Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
+            //         ExchangeType = "direct"
+            //     });
+            // }
+            // catch (Exception ex)
+            // {
+            //     // Log the exception (implementation depends on your logging framework)
+            //     throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
+            // }
 
-            
 
-            return Mapper.Map<CreateTransactionResponse>(transaction);
+            return Mapper.Map<UpdateTransactionResponse>(transaction);
         }
 
         public async Task<CreateManyTransactionsResponse> CreateMany(CreateManyTransactionsRequest request)
@@ -95,13 +94,13 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             await UnitOfWork.SaveChangesAsync();
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.create",
-                RoutingKey = "transaction.created",
-                Body = JsonSerializer.Serialize(Mapper.Map<List<TransactionPublishedModel>>(addedTransactions)),
-                ExchangeType = "direct"
-            });
+            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            //     {
+            //         Exchange = "transaction.direct.create",
+            //         RoutingKey = "transaction.created",
+            //         Body = JsonSerializer.Serialize(Mapper.Map<List<TransactionPublishedModel>>(addedTransactions)),
+            //         ExchangeType = "direct"
+            //     });
 
             var result = Mapper.Map<CreateManyTransactionsResponse>(
                 new CreateManyTransactionsResponse
@@ -128,16 +127,16 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.Update(transaction);
             await UnitOfWork.SaveChangesAsync();
 
-            var transactionList = new List<(Transaction, Transaction)> { (oldTransaction, transaction) };
-            var transactionPublishedList = transactionList.Adapt<List<(TransactionPublishedModel, TransactionPublishedModel)>>();
+            // var transactionList = new List<(Transaction, Transaction)> { (oldTransaction, transaction) };
+            // var transactionPublishedList = transactionList.Adapt<List<(TransactionPublishedModel, TransactionPublishedModel)>>();
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.update",
-                RoutingKey = "transaction.updated",
-                Body = JsonSerializer.Serialize(transactionPublishedList),
-                ExchangeType = "direct"
-            });
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.update",
+            //     RoutingKey = "transaction.updated",
+            //     Body = JsonSerializer.Serialize(transactionPublishedList),
+            //     ExchangeType = "direct"
+            // });
 
             return Mapper.Map<UpdateTransactionResponse>(transaction);
         }
@@ -146,7 +145,7 @@ namespace Zenit.Management.Business.Services.TransactionService
         {
             var requestTransactions = request.Transactions;
             var updatedTransactions = new List<Transaction>();
-            var response = new List<CreateTransactionResponse>();
+            var response = new List<UpdateTransactionResponse>();
 
             foreach (var transaction in requestTransactions)
             {
@@ -158,29 +157,32 @@ namespace Zenit.Management.Business.Services.TransactionService
                 }
 
                 transaction.Adapt(existingTransaction);
-
-                updatedTransactions.Add(Mapper.Map<Transaction>(existingTransaction));
-                response.Add(Mapper.Map<CreateTransactionResponse>(existingTransaction));
+                updatedTransactions.Add(existingTransaction);
             }
 
             _TransactionManager.UpdateRange(updatedTransactions);
 
             await UnitOfWork.SaveChangesAsync();
 
-            var updatedTransactionsPublishedList = Mapper.Map<List<(TransactionPublishedModel, TransactionPublishedModel)>>(
-                requestTransactions.Zip(
-                    updatedTransactions,
-                    (req, updated) => (Mapper.Map<TransactionPublishedModel>(req), Mapper.Map<TransactionPublishedModel>(updated))
-                )
-            );
+            // var updatedTransactionsPublishedList = Mapper.Map<List<(TransactionPublishedModel, TransactionPublishedModel)>>(
+            //     requestTransactions.Zip(
+            //         updatedTransactions,
+            //         (req, updated) => (Mapper.Map<TransactionPublishedModel>(req), Mapper.Map<TransactionPublishedModel>(updated))
+            //     )
+            // );
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.update_many",
+            //     RoutingKey = "transactions.updated",
+            //     Body = JsonSerializer.Serialize(updatedTransactionsPublishedList),
+            //     ExchangeType = "direct"
+            // });
+
+            foreach (var transaction in updatedTransactions)
             {
-                Exchange = "transaction.direct.update_many",
-                RoutingKey = "transactions.updated",
-                Body = JsonSerializer.Serialize(updatedTransactionsPublishedList),
-                ExchangeType = "direct"
-            });
+                response.Add(Mapper.Map<UpdateTransactionResponse>(transaction));
+            }
 
             return Mapper.Map<UpdateManyTransactionsResponse>(
                 new UpdateManyTransactionsResponse
@@ -201,16 +203,16 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             _TransactionManager.Delete(transaction);
 
-            var transactionList = new List<Transaction> { transaction };
-            var transactionPublishedList = transactionList.Adapt<List<TransactionPublishedModel>>();
+            // var transactionList = new List<Transaction> { transaction };
+            // var transactionPublishedList = transactionList.Adapt<List<TransactionPublishedModel>>();
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.delete",
-                RoutingKey = "transaction.deleted",
-                Body = JsonSerializer.Serialize(transactionPublishedList),
-                ExchangeType = "direct"
-            });
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.delete",
+            //     RoutingKey = "transaction.deleted",
+            //     Body = JsonSerializer.Serialize(transactionPublishedList),
+            //     ExchangeType = "direct"
+            // });
 
             await UnitOfWork.SaveChangesAsync();
         }

@@ -11,25 +11,23 @@ namespace Zenit.Management.Host.Controllers
     public class TransactionsController : ManagementControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAll(GetAllTransactionRequest request)
+        public async Task<IActionResult> GetAll()
         {
+            var request = new GetAllTransactionRequest();
             return await GetRequest<GetAllTransactionRequest, GetAllTransactionResponse>(request);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail([FromRoute] Guid id, [FromBody] GetDetailTransactionRequest request)
+        public async Task<IActionResult> GetDetail([FromRoute] Guid id)
         {
-            if (id != request.Id)
-            {
-                return BadRequest("Route id does not match body id.");
-            }
+            var request = new GetDetailTransactionRequest { Id = id };
             return await GetRequest<GetDetailTransactionRequest, GetDetailTransactionResponse>(request);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTransactionRequest request)
         {
-            return await CreateRequest<CreateTransactionRequest, CreateTransactionResponse>(request);
+            return await CreateRequest<CreateTransactionRequest, UpdateTransactionResponse>(request);
         }
 
         [HttpPost("many")]
@@ -43,18 +41,15 @@ namespace Zenit.Management.Host.Controllers
         {
             if (id != request.Id)
             {
-                return BadRequest("Route id does not match body id.");
+                return BadRequest("ID in route does not match ID in request body.");
             }
             return await UpdateRequest<UpdateTransactionRequest, UpdateTransactionResponse>(request);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromBody] DeleteTransactionRequest request)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            if (id != request.Id)
-            {
-                return BadRequest("Route id does not match body id.");
-            }
+            var request = new DeleteTransactionRequest { Id = id };
             return await DeleteRequest(request);
         }
 

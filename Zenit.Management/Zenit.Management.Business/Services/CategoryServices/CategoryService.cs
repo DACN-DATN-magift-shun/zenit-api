@@ -12,14 +12,22 @@ namespace Zenit.Management.Business.Services.CategoryServices
 
         public Task<GetCategoryResponse> GetCategory(GetCategoryRequest request)
         {
-            var category = _CategoryManager.FindBy(c => c.Id == request.Id).FirstOrDefault();
+            var category = _CategoryManager.FindBy(c => c.Id == request.Id && c.IsDeleted == false).FirstOrDefault();
+
+            if (category == null)
+            {
+                throw new Exception("Category not found");
+            }
 
             return Task.FromResult(Mapper.Map<GetCategoryResponse>(category));
         }
 
         public Task<GetCategoryGroupResponse> GetCategoryGroup(GetCategoryGroupRequest request)
         {
-            var categories = _CategoryManager.FindBy(c => c.GroupType == request.GroupType).ToList();
+            var categories = _CategoryManager.FindBy(
+                c => c.GroupType == request.GroupType &&
+                c.IsDeleted == false &&
+                c.AccountId == CurrentAccount.Id).ToList();
 
             var response = new
             {
