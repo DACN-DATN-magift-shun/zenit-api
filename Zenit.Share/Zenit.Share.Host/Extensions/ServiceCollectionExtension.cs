@@ -13,6 +13,7 @@ using Zenit.Share.Business.Interfaces;
 using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Interfaces;
 using Zenit.Share.Common.Services;
+using Zenit.Share.Data.Interfaces;
 
 
 namespace Zenit.Share.Host.Extensions
@@ -61,6 +62,16 @@ namespace Zenit.Share.Host.Extensions
         {
             services.AddServicesWithAssignedInterface<IDomainService>();
             return services;
+        }
+
+        public static IServiceCollection AddCacheService(this IServiceCollection services)
+        {
+            return services.AddServicesWithAssignedInterface<ICache>();
+        }
+
+        public static IServiceCollection AddDapperQuery(this IServiceCollection services)
+        {
+            return services.AddServicesWithAssignedInterface<IDapperQuery>();
         }
 
         public static IServiceCollection AddAuthenticationService(this IServiceCollection services)
@@ -126,7 +137,7 @@ namespace Zenit.Share.Host.Extensions
             return services;
         }
 
-        public static async Task<IServiceCollection> AddRabbitmqService(this IServiceCollection services)
+        public static IServiceCollection AddRabbitmqService(this IServiceCollection services)
         {
             var connectionFactory = new ConnectionFactory
             {
@@ -138,13 +149,15 @@ namespace Zenit.Share.Host.Extensions
                 RequestedHeartbeat = TimeSpan.FromSeconds(60),
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
-                RequestedConnectionTimeout = TimeSpan.FromSeconds(30)
+                RequestedConnectionTimeout = TimeSpan.FromSeconds(60)
             };
 
-            var connection = await connectionFactory.CreateConnectionAsync();
-
             services.AddSingleton<IConnectionFactory>(connectionFactory);
-            services.AddSingleton(connection);
+            services.AddSingleton<IConnection>(sp =>
+            {
+                var factory = sp.GetRequiredService<IConnectionFactory>();
+                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+            });
 
             return services;
         }
@@ -157,7 +170,7 @@ namespace Zenit.Share.Host.Extensions
 
         public static IServiceCollection AddRabbitmqConsumerService(this IServiceCollection services)
         {
-            services.AddScoped<RabbitmqConsumerService>();
+            services.AddSingleton<RabbitmqConsumerService>();
             return services;
         }
     }

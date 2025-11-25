@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Zenit.Management.Contract.TransactionRequests
 {
-    public class CreateTransactionRequest : IRequest<CreateTransactionResponse>
+    public class CreateTransactionRequest : IRequest<UpdateTransactionResponse>
     {
         public required string Title { get; set; }
         public string? Note { get; set; }

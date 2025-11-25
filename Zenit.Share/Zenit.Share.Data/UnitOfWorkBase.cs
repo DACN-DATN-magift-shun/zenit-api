@@ -14,8 +14,7 @@ using Zenit.Share.Data.Interfaces;
 namespace Zenit.Share.Data
 {
     public abstract class UnitOfWorkBase<TContext>(
-        TContext context,
-        IPublisher publisher
+        TContext context
     ) : IUnitOfWork
         where TContext : DbContext
     {

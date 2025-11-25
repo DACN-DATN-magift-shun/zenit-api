@@ -7,7 +7,7 @@ namespace Zenit.Management.Contract.Requests.CategoryRequests
 {
     public class GetCategoryGroupRequest : IRequest<GetCategoryGroupResponse>
     {
-        public required Guid GroupId { get; set; }
+        public required CategoryGroupType GroupType { get; set; }
     }
 
     public class GetCategoryGroupResponse

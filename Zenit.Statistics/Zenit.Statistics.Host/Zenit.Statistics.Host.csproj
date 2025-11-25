@@ -7,8 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="MediatR" Version="13.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zenit.Share\Zenit.Share.Host\Zenit.Share.Host.csproj" />
+    <ProjectReference Include="..\Zenit.Statistics.Data\Zenit.Statistics.Data.csproj" />
+    <ProjectReference Include="..\Zenit.Statistics.Common\Zenit.Statistics.Common.csproj" />
+    <ProjectReference Include="..\Zenit.Statistics.Contract\Zenit.Statistics.Contract.csproj" />
+    <ProjectReference Include="..\Zenit.Statistics.Business\Zenit.Statistics.Business.csproj" />
   </ItemGroup>
 
 </Project>

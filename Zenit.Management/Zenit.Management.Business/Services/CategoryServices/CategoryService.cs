@@ -9,24 +9,30 @@ namespace Zenit.Management.Business.Services.CategoryServices
     public class CategoryService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {
         private CategoryManager _CategoryManager => GetService<CategoryManager>();
-        private CategoryGroupManager _CategoryGroupManager => GetService<CategoryGroupManager>();
 
         public Task<GetCategoryResponse> GetCategory(GetCategoryRequest request)
         {
-            var category = _CategoryManager.FindBy(c => c.Id == request.Id).FirstOrDefault();
+            var category = _CategoryManager.FindBy(c => c.Id == request.Id && c.IsDeleted == false).FirstOrDefault();
+
+            if (category == null)
+            {
+                throw new Exception("Category not found");
+            }
 
             return Task.FromResult(Mapper.Map<GetCategoryResponse>(category));
         }
 
         public Task<GetCategoryGroupResponse> GetCategoryGroup(GetCategoryGroupRequest request)
         {
-            var categoryGroup = _CategoryGroupManager.FindBy(c => c.Id == request.GroupId).FirstOrDefault();
-            var categories = _CategoryManager.FindBy(c => c.GroupId == request.GroupId).ToList();
+            var categories = _CategoryManager.FindBy(
+                c => c.GroupType == request.GroupType &&
+                c.IsDeleted == false &&
+                c.AccountId == CurrentAccount.Id).ToList();
 
             var response = new
             {
-                categoryGroup.Name,
-                categoryGroup.GroupType,
+                Name = request.GroupType,
+                Type = (int)request.GroupType,
                 Categories = categories,
             };
 
@@ -37,6 +43,7 @@ namespace Zenit.Management.Business.Services.CategoryServices
         {
             var category = Mapper.Map<Category>(request);
             category.Id = Guid.NewGuid();
+            category.AccountId = CurrentAccount.Id;
 
             _CategoryManager.Add(category);
             await UnitOfWork.SaveChangesAsync();

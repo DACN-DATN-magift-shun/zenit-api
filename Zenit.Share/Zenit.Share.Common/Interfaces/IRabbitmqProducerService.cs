@@ -4,6 +4,6 @@ namespace Zenit.Share.Common.Interfaces
 {
     public interface IRabbitmqProducer
     {
-        Task PublishMessageAsync();
+        Task PublishMessageAsync(RabbitmqProducerRequest request);
     }
 }

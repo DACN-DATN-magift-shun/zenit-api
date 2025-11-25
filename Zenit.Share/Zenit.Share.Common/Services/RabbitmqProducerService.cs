@@ -10,13 +10,15 @@ namespace Zenit.Share.Common.Services
     {
         public required string Exchange { get; set; }
         public required string RoutingKey { get; set; }
-        public required string Body { get; set; }
-        public string ExchangeType { get; set; } = "direct";
+        public string? Body { get; set; }
+        public required string ExchangeType { get; set; }
     }
 
-    public class RabbitmqProducerService(IConnection connection, RabbitmqProducerRequest request) : IRabbitmqProducer
+    public class RabbitmqProducerService(IConnection connection) : IRabbitmqProducer
     {
-        public async Task PublishMessageAsync()
+        // IChannel? _channel;
+
+        public async Task PublishMessageAsync(RabbitmqProducerRequest request)
         {
             using var _channel =  await connection.CreateChannelAsync();
 
@@ -25,10 +27,12 @@ namespace Zenit.Share.Common.Services
                 type: request.ExchangeType
             );
 
+
             await _channel.BasicPublishAsync(
                 exchange: request.Exchange,
                 routingKey: request.RoutingKey,
-                body: Encoding.UTF8.GetBytes(request.Body)
+                mandatory: true,
+                body: request.Body != "" ? Encoding.UTF8.GetBytes(request.Body) : Array.Empty<byte>()
             );
         }
     }
