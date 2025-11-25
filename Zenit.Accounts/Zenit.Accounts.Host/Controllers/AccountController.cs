@@ -22,27 +22,27 @@ namespace Zenit.Accounts.Host.Controllers
             return await CreateRequest<AccountLoginRequest, AccountLoginResponse>(request);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("me")]
         [Authorize]
-        public async Task<IActionResult> GetDetail(string id)
+        public async Task<IActionResult> GetDetail()
         {
-            var request = new AccountGetDetailRequest { Id = id };
+            var request = new AccountGetDetailRequest();
             return await GetRequest<AccountGetDetailRequest, AccountGetDetailResponse>(request);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("me")]
         [Authorize]
-        public async Task<IActionResult> Update(string id, [FromBody] AccountUpdateRequest request)
+        public async Task<IActionResult> Update([FromBody] AccountUpdateRequest request)
         {
 
             return await UpdateRequest<AccountUpdateRequest, AccountUpdateResponse>(request);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("me")]
         [Authorize]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete()
         {
-            var request = new AccountDeleteRequest { Id = id };
+            var request = new AccountDeleteRequest();
             return await DeleteRequest(request);
         }
     }

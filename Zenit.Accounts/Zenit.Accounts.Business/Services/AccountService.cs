@@ -31,7 +31,7 @@ namespace Zenit.Accounts.Business.Services
         public async Task<AccountLoginResponse> Login(AccountLoginRequest request)
         {
             var account = _AccountManager.GetAll()
-                .FirstOrDefault(current => current.Email == request.Email)
+                .FirstOrDefault(current => current.Email == request.Email && current.IsDeleted == false)
                 ?? throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
 
             var password = Convert.FromBase64String(account.Password);
@@ -81,8 +81,12 @@ namespace Zenit.Accounts.Business.Services
 
         public Task<AccountGetDetailResponse> GetDetail(AccountGetDetailRequest request)
         {
-            var requestId = Guid.Parse(request.Id);
-            var account = _AccountManager.FindBy(current => current.Id == requestId).FirstOrDefault();
+            var account = _AccountManager.FindBy(current => current.Id == CurrentAccount.Id && !current.IsDeleted).FirstOrDefault();
+
+            if (account == null)
+            {
+                throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+            }
 
             return Task.FromResult(Mapper.Map<AccountGetDetailResponse>(account!));
         }
@@ -90,20 +94,25 @@ namespace Zenit.Accounts.Business.Services
         public async Task<AccountUpdateResponse> Update(AccountUpdateRequest request)
         {
             var account = _AccountManager
-                .FindBy(current => current.Id.ToString() == request.Id)
+                .FindBy(current => current.Id == CurrentAccount.Id && !current.IsDeleted)
                 .FirstOrDefault();
+            
+            if (account == null)
+            {
+                throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);
+            }
 
             request.Adapt(account);
             _AccountManager.Update(account!);
 
             await UnitOfWork.SaveChangesAsync();
-            return Mapper.Map<AccountUpdateResponse>(account!)  ;
+            return Mapper.Map<AccountUpdateResponse>(account!);
         }
 
         public async Task Delete(AccountDeleteRequest request)
         {
             var account = _AccountManager
-                .FindBy(current => current.Id.ToString() == request.Id)
+                .FindBy(current => current.Id == CurrentAccount.Id)
                 .FirstOrDefault();
 
             _AccountManager.Delete(account!);
