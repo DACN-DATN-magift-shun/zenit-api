@@ -56,11 +56,13 @@ namespace Zenit.Statistics.Business.Workers
 
                                     foreach (var transaction in transactions)
                                     {
-                                        string sql = SqlHelper.UpsertDailyStatistics();
+                                        string sql = SqlHelper.UpsertDailyStatisticsWithAddedTransactions();
 
                                         var parameters = new
                                         {
-                                            Date = transaction.TransactionDate,
+                                            Date = transaction.TransactionDate.Date,
+                                            // StartDate = transaction.TransactionDate.Date,
+                                            // EndDate = transaction.TransactionDate.Date.AddDays(1),
                                             TotalAmount = transaction.Amount,
                                             CategoryId = transaction.CategoryId,
                                             AccountId = transaction.AccountId,
@@ -93,6 +95,173 @@ namespace Zenit.Statistics.Business.Workers
                                 Exchange = "transaction.direct.create",
                                 Queue = "transaction.statistics.created", // ✅ Thêm Queue name
                                 RoutingKey = "transaction.created",
+                                ExchangeType = "direct"
+                            }
+                        );
+                        
+                        // ✅ Giữ task alive cho đến khi cancellation
+                        await Task.Delay(Timeout.Infinite, stoppingToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        _logger.LogInformation("Consumer stopped gracefully");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Fatal error in transaction.created consumer");
+                        throw;
+                    }
+                }, stoppingToken),
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        _logger.LogInformation("Starting transaction.created consumer");
+
+                        await RabbitmqConsumerService.ConsumeMessageAsync(
+                            async (sender, ea) =>
+                            {
+                                try
+                                {
+                                    byte[] bodyBytes = ea.Body.ToArray();
+                                    string bodyString = Encoding.UTF8.GetString(bodyBytes);
+
+                                    _logger.LogInformation($"Received message: {bodyString}");
+
+
+                                    var transactions = JsonSerializer.Deserialize<List<TransactionModel>>(bodyString);
+
+                                    var scope = _serviceProvider.CreateScope();
+                                    var dapperQuery = scope.ServiceProvider.GetRequiredService<DapperQueryService>();
+
+                                    foreach (var transaction in transactions)
+                                    {
+                                        string sql = SqlHelper.UpsertDailyStatisticsWithDeletedTransactions();
+
+                                        var parameters = new
+                                        {
+                                            Date = transaction.TransactionDate.Date,
+                                            // StartDate = transaction.TransactionDate.Date,
+                                            // EndDate = transaction.TransactionDate.Date.AddDays(1),
+                                            TotalAmount = transaction.Amount,
+                                            CategoryId = transaction.CategoryId,
+                                            AccountId = transaction.AccountId,
+                                            GroupType = transaction.GroupType,
+                                            ModifiedById = transaction.AccountId,
+                                        };
+
+                                        dapperQuery.Execute(sql, parameters);
+
+                                    }
+
+                                    _logger.LogInformation($"Successfully processed {transactions.Count} transactions");
+
+                                }
+                                catch (JsonException jsonEx)
+                                {
+                                    _logger.LogError(jsonEx, "Failed to deserialize message");
+                                    throw; // Để RabbitmqConsumerService xử lý nack
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, "Error processing transaction.created message");
+                                    throw;
+                                }
+                            },
+                            new RabbitmqConsumerRequest
+                            {
+                                Exchange = "transaction.direct.delete",
+                                Queue = "transaction.statistics.deleted", // ✅ Thêm Queue name
+                                RoutingKey = "transaction.deleted",
+                                ExchangeType = "direct"
+                            }
+                        );
+                        
+                        // ✅ Giữ task alive cho đến khi cancellation
+                        await Task.Delay(Timeout.Infinite, stoppingToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        _logger.LogInformation("Consumer stopped gracefully");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Fatal error in transaction.created consumer");
+                        throw;
+                    }
+                }, stoppingToken),
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        _logger.LogInformation("Starting transaction.created consumer");
+
+                        await RabbitmqConsumerService.ConsumeMessageAsync(
+                            async (sender, ea) =>
+                            {
+                                try
+                                {
+                                    byte[] bodyBytes = ea.Body.ToArray();
+                                    string bodyString = Encoding.UTF8.GetString(bodyBytes);
+
+                                    _logger.LogInformation($"Received message: {bodyString}");
+
+
+                                    var transactions = JsonSerializer.Deserialize<List<TransactionModel>>(bodyString);
+
+                                    var scope = _serviceProvider.CreateScope();
+                                    var dapperQuery = scope.ServiceProvider.GetRequiredService<DapperQueryService>();
+
+                                    foreach (var transaction in transactions)
+                                    {
+                                        string sql = SqlHelper.UpsertDailyStatisticsWithModifiedTransactions();
+
+                                        var parameters = new
+                                        {
+                                            // NewStartDate = transaction.TransactionDate.Date,
+                                            // NewEndDate = transaction.TransactionDate.Date.AddDays(1),
+                                            Date = transaction.TransactionDate.Date,
+                                            TotalAmount = transaction.Amount,
+                                            CategoryId = transaction.CategoryId,
+                                            AccountId = transaction.AccountId,
+                                            GroupType = transaction.GroupType,
+                                            ModifiedById = transaction.AccountId,
+                                            OldAmount = transaction.OldAmount,
+                                            OldTransactionDate = transaction.OldTransactionDate?.Date,
+                                            // OldStartDate = transaction.OldTransactionDate?.Date,
+                                            // OldEndDate = transaction.OldTransactionDate?.Date.AddDays(1),
+                                            OldCategoryId = transaction.OldCategoryId,
+                                            OldGroupType = transaction.OldGroupType,
+                                            CategoryGroupStatsId = Guid.NewGuid(),
+                                            CategoryStatsId = Guid.NewGuid(),
+                                            CreatedById = transaction.AccountId,
+                                        };
+
+                                        dapperQuery.Execute(sql, parameters);
+
+                                    }
+
+                                    _logger.LogInformation($"Successfully processed {transactions.Count} transactions");
+
+                                }
+                                catch (JsonException jsonEx)
+                                {
+                                    _logger.LogError(jsonEx, "Failed to deserialize message");
+                                    throw; // Để RabbitmqConsumerService xử lý nack
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, "Error processing transaction.created message");
+                                    throw;
+                                }
+                            },
+                            new RabbitmqConsumerRequest
+                            {
+                                Exchange = "transaction.direct.update",
+                                Queue = "transaction.statistics.updated", // ✅ Thêm Queue name
+                                RoutingKey = "transaction.updated",
                                 ExchangeType = "direct"
                             }
                         );
