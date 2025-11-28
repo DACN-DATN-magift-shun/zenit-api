@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.EntityFrameworkCore;
 
 using Zenit.Share.Common.Enums;
@@ -8,6 +10,7 @@ namespace Zenit.Statistics.Data.Entities;
 [Index(nameof(Date), nameof(CategoryId), IsUnique = true)]
 public class CategoryDailyStatistics : StatisticsAuditModel
 {
+    [Column(TypeName = "date")]
     public required DateTime Date { get; set; }
     public required long TotalAmount { get; set; }
     public float? Percentage { get; set; }
@@ -20,6 +23,7 @@ public class CategoryDailyStatistics : StatisticsAuditModel
 [Index(nameof(Date), nameof(GroupType), nameof(AccountId), IsUnique = true)]
 public class CategoryGroupDailyStatistics : StatisticsAuditModel
 {
+    [Column(TypeName = "date")]
     public required DateTime Date { get; set; }
     public required long TotalAmount { get; set; }
     public float? Percentage { get; set; }

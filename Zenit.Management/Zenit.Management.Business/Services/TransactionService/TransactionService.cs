@@ -41,34 +41,34 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             await UnitOfWork.SaveChangesAsync();
 
-            // var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
-            //                                             .Include(t => t.Category)
-            //                                             .FirstOrDefault();
+            var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+                                                        .Include(t => t.Category)
+                                                        .FirstOrDefault();
 
-            // var transactionPublishedList = new TransactionPublishedModel
-            // {
-            //     Amount = transaction.Amount,
-            //     TransactionDate = transaction.TransactionDate,
-            //     CategoryId = transaction.CategoryId,
-            //     AccountId = transaction.AccountId,
-            //     GroupType = trackedTransaction.Category.GroupType
-            // };
+            var transactionPublishedList = new TransactionPublishedModel
+            {
+                Amount = transaction.Amount,
+                TransactionDate = transaction.TransactionDate,
+                CategoryId = transaction.CategoryId,
+                AccountId = transaction.AccountId,
+                GroupType = trackedTransaction.Category.GroupType
+            };
 
-            // try
-            // {
-            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            //     {
-            //         Exchange = "transaction.direct.create",
-            //         RoutingKey = "transaction.created",
-            //         Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
-            //         ExchangeType = "direct"
-            //     });
-            // }
-            // catch (Exception ex)
-            // {
-            //     // Log the exception (implementation depends on your logging framework)
-            //     throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
-            // }
+            try
+            {
+                await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+                {
+                    Exchange = "transaction.direct.create",
+                    RoutingKey = "transaction.created",
+                    Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
+                    ExchangeType = "direct"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (implementation depends on your logging framework)
+                throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
+            }
 
 
             return Mapper.Map<UpdateTransactionResponse>(transaction);
@@ -94,13 +94,13 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             await UnitOfWork.SaveChangesAsync();
 
-            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            //     {
-            //         Exchange = "transaction.direct.create",
-            //         RoutingKey = "transaction.created",
-            //         Body = JsonSerializer.Serialize(Mapper.Map<List<TransactionPublishedModel>>(addedTransactions)),
-            //         ExchangeType = "direct"
-            //     });
+                // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+                // {
+                //     Exchange = "transaction.direct.create",
+                //     RoutingKey = "transaction.created",
+                //     Body = JsonSerializer.Serialize(Mapper.Map<List<TransactionPublishedModel>>(addedTransactions)),
+                //     ExchangeType = "direct"
+                // });
 
             var result = Mapper.Map<CreateManyTransactionsResponse>(
                 new CreateManyTransactionsResponse
@@ -127,16 +127,32 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.Update(transaction);
             await UnitOfWork.SaveChangesAsync();
 
-            // var transactionList = new List<(Transaction, Transaction)> { (oldTransaction, transaction) };
-            // var transactionPublishedList = transactionList.Adapt<List<(TransactionPublishedModel, TransactionPublishedModel)>>();
+            var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+                                                .Include(t => t.Category)
+                                                .FirstOrDefault();
+            
+            var publishedModel = new TransactionPublishedModel
+            {
+                Amount = transaction.Amount,
+                TransactionDate = transaction.TransactionDate,
+                CategoryId = transaction.CategoryId,
+                AccountId = transaction.AccountId,
+                GroupType = trackedTransaction.Category.GroupType,
+                OldAmount = oldTransaction.Amount,
+                OldTransactionDate = oldTransaction.TransactionDate,
+                OldCategoryId = oldTransaction.CategoryId,
+                OldGroupType = oldTransaction.Category.GroupType
+            };
 
-            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            // {
-            //     Exchange = "transaction.direct.update",
-            //     RoutingKey = "transaction.updated",
-            //     Body = JsonSerializer.Serialize(transactionPublishedList),
-            //     ExchangeType = "direct"
-            // });
+            var transactionPublishedList = new List<TransactionPublishedModel> { publishedModel };
+
+            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            {
+                Exchange = "transaction.direct.update",
+                RoutingKey = "transaction.updated",
+                Body = JsonSerializer.Serialize(transactionPublishedList),
+                ExchangeType = "direct"
+            });
 
             return Mapper.Map<UpdateTransactionResponse>(transaction);
         }
@@ -162,7 +178,7 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             _TransactionManager.UpdateRange(updatedTransactions);
 
-            await UnitOfWork.SaveChangesAsync();
+            // await UnitOfWork.SaveChangesAsync();
 
             // var updatedTransactionsPublishedList = Mapper.Map<List<(TransactionPublishedModel, TransactionPublishedModel)>>(
             //     requestTransactions.Zip(
@@ -202,19 +218,27 @@ namespace Zenit.Management.Business.Services.TransactionService
             }
 
             _TransactionManager.Delete(transaction);
-
-            // var transactionList = new List<Transaction> { transaction };
-            // var transactionPublishedList = transactionList.Adapt<List<TransactionPublishedModel>>();
-
-            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            // {
-            //     Exchange = "transaction.direct.delete",
-            //     RoutingKey = "transaction.deleted",
-            //     Body = JsonSerializer.Serialize(transactionPublishedList),
-            //     ExchangeType = "direct"
-            // });
-
             await UnitOfWork.SaveChangesAsync();
+
+            var transactionPublishedList = new List<TransactionPublishedModel>
+            {
+                new TransactionPublishedModel
+                {
+                    Amount = transaction.Amount,
+                    TransactionDate = transaction.TransactionDate,
+                    CategoryId = transaction.CategoryId,
+                    AccountId = transaction.AccountId,
+                    GroupType = transaction.Category.GroupType
+                }
+            };
+
+            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            {
+                Exchange = "transaction.direct.delete",
+                RoutingKey = "transaction.deleted",
+                Body = JsonSerializer.Serialize(transactionPublishedList),
+                ExchangeType = "direct"
+            });
         }
     }
 }

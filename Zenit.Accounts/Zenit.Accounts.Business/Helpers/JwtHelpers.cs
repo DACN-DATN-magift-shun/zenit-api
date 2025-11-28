@@ -51,7 +51,7 @@ namespace Zenit.Accounts.Business.Helpers
             var jwtToken = new JwtSecurityToken(
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddHours(8),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(jwtSecret)
