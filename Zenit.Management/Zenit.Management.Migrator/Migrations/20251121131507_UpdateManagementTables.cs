@@ -10,15 +10,15 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // migrationBuilder.RenameColumn(
-            //     name: "UserId",
-            //     table: "Transaction",
-            //     newName: "AccountId");
+            migrationBuilder.RenameColumn(
+                name: "UserId",
+                table: "Transaction",
+                newName: "AccountId");
 
-            // migrationBuilder.RenameColumn(
-            //     name: "UserId",
-            //     table: "CategoryGroupExpenseAlertThreshold",
-            //     newName: "AccountId");
+            migrationBuilder.RenameColumn(
+                name: "UserId",
+                table: "CategoryGroupExpenseAlertThreshold",
+                newName: "AccountId");
         }
 
         /// <inheritdoc />
