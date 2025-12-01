@@ -12,7 +12,7 @@ namespace Zenit.Statistics.Host
     {
         public IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
 
-        public async Task<IActionResult> GetAllRequest<TRequest, TResponse>(TRequest request)
+        public async Task<IActionResult> GetRequest<TRequest, TResponse>(TRequest request)
             where TRequest : IRequest<TResponse>
         {
             if (!ModelState.IsValid)
