@@ -91,16 +91,36 @@ namespace Zenit.Management.Business.Services.TransactionService
             }
 
             _TransactionManager.AddRange(addedTransactions);
-
             await UnitOfWork.SaveChangesAsync();
 
-                // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-                // {
-                //     Exchange = "transaction.direct.create",
-                //     RoutingKey = "transaction.created",
-                //     Body = JsonSerializer.Serialize(Mapper.Map<List<TransactionPublishedModel>>(addedTransactions)),
-                //     ExchangeType = "direct"
-                // });
+            try {
+                var transactionPublishedList = addedTransactions.Select(t =>
+                {
+                    var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
+                                                                .Include(tr => tr.Category)
+                                                                .FirstOrDefault();
+
+                    return new TransactionPublishedModel
+                    {
+                        Amount = t.Amount,
+                        TransactionDate = t.TransactionDate,
+                        CategoryId = t.CategoryId,
+                        AccountId = t.AccountId,
+                        GroupType = trackedTransaction.Category.GroupType
+                    };
+                }).ToList();
+
+                await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+                {
+                    Exchange = "transaction.direct.create",
+                    RoutingKey = "transaction.created",
+                    Body = JsonSerializer.Serialize(transactionPublishedList),
+                    ExchangeType = "direct"
+                });
+            } catch (Exception ex)
+            {
+                throw new Exception($"Failed: {ex.Message}");
+            }
 
             var result = Mapper.Map<CreateManyTransactionsResponse>(
                 new CreateManyTransactionsResponse
@@ -160,12 +180,28 @@ namespace Zenit.Management.Business.Services.TransactionService
         public async Task<UpdateManyTransactionsResponse> UpdateMany(UpdateManyTransactionsRequest request)
         {
             var requestTransactions = request.Transactions;
+            var beforeUpdateTransactions = new List<Transaction>();
             var updatedTransactions = new List<Transaction>();
             var response = new List<UpdateTransactionResponse>();
 
             foreach (var transaction in requestTransactions)
             {
                 var existingTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id).FirstOrDefault();
+                var existingTransactionCategory = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+                                                            .Include(t => t.Category)
+                                                            .FirstOrDefault();
+
+                beforeUpdateTransactions.Add(new Transaction
+                {
+                    Id = existingTransaction.Id,
+                    Title = existingTransaction.Title,
+                    Amount = existingTransaction.Amount,
+                    TransactionDate = existingTransaction.TransactionDate,
+                    CategoryId = existingTransaction.CategoryId,
+                    AccountId = existingTransaction.AccountId,
+                    CreatedAt = existingTransaction.CreatedAt,
+                    Category =  existingTransactionCategory.Category,
+                });
 
                 if (existingTransaction == null)
                 {
@@ -177,23 +213,37 @@ namespace Zenit.Management.Business.Services.TransactionService
             }
 
             _TransactionManager.UpdateRange(updatedTransactions);
+            await UnitOfWork.SaveChangesAsync();
 
-            // await UnitOfWork.SaveChangesAsync();
+            var transactionPublishedList = updatedTransactions.Select(t =>
+            {
+                var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
+                                                            .Include(tr => tr.Category)
+                                                            .FirstOrDefault();
+                
+                var oldTransaction = beforeUpdateTransactions.FirstOrDefault(rt => rt.Id == t.Id);
 
-            // var updatedTransactionsPublishedList = Mapper.Map<List<(TransactionPublishedModel, TransactionPublishedModel)>>(
-            //     requestTransactions.Zip(
-            //         updatedTransactions,
-            //         (req, updated) => (Mapper.Map<TransactionPublishedModel>(req), Mapper.Map<TransactionPublishedModel>(updated))
-            //     )
-            // );
+                return new TransactionPublishedModel
+                {
+                    Amount = t.Amount,
+                    TransactionDate = t.TransactionDate,
+                    CategoryId = t.CategoryId,
+                    AccountId = t.AccountId,
+                    GroupType = trackedTransaction.Category.GroupType,
+                    OldAmount = oldTransaction.Amount,
+                    OldTransactionDate = oldTransaction.TransactionDate,
+                    OldCategoryId = oldTransaction.CategoryId,
+                    OldGroupType = oldTransaction.Category.GroupType
+                };
+            }).ToList();
 
-            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            // {
-            //     Exchange = "transaction.direct.update_many",
-            //     RoutingKey = "transactions.updated",
-            //     Body = JsonSerializer.Serialize(updatedTransactionsPublishedList),
-            //     ExchangeType = "direct"
-            // });
+            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            {
+                Exchange = "transaction.direct.update",
+                RoutingKey = "transaction.updated",
+                Body = JsonSerializer.Serialize(transactionPublishedList),
+                ExchangeType = "direct"
+            });
 
             foreach (var transaction in updatedTransactions)
             {

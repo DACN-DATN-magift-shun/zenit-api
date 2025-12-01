@@ -27,7 +27,6 @@ namespace Zenit.Statistics.Host.Controllers
 
                 await Task.Delay(2000); // chờ 2 giây trước khi gửi event tiếp theo
             }
-
             return Ok();
         }
     }
