@@ -127,7 +127,7 @@ namespace Zenit.Statistics.Business.Workers
                                     byte[] bodyBytes = ea.Body.ToArray();
                                     string bodyString = Encoding.UTF8.GetString(bodyBytes);
 
-                                    _logger.LogInformation($"Received message: {bodyString}");
+                                    _logger.LogInformation($"Received message at created queue: {bodyString}");
 
 
                                     var transactions = JsonSerializer.Deserialize<List<TransactionModel>>(bodyString);
@@ -206,7 +206,7 @@ namespace Zenit.Statistics.Business.Workers
                                     byte[] bodyBytes = ea.Body.ToArray();
                                     string bodyString = Encoding.UTF8.GetString(bodyBytes);
 
-                                    _logger.LogInformation($"Received message: {bodyString}");
+                                    _logger.LogInformation($"Received message at updated queue: {bodyString}");
 
 
                                     var transactions = JsonSerializer.Deserialize<List<TransactionModel>>(bodyString);

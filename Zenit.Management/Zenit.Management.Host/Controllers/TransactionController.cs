@@ -11,9 +11,8 @@ namespace Zenit.Management.Host.Controllers
     public class TransactionsController : ManagementControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] GetAllTransactionRequest request)
         {
-            var request = new GetAllTransactionRequest();
             return await GetRequest<GetAllTransactionRequest, GetAllTransactionResponse>(request);
         }
 
