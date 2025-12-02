@@ -9,17 +9,19 @@ namespace Zenit.Share.Contract.Models
 
         public static PaginationResponse<TItem> Create(IQueryable<TItem> queryable, PaginationRequest request)
         {
+            var TotalItems = queryable.Count();
+
             if (string.IsNullOrEmpty(request.OrderBy) == false)
             {
                 var isDesc = request.OrderDirection?.ToLower() == "desc";
 
                 if (isDesc)
                 {
-                    queryable = queryable.OrderByDescending(e => EF.Property<string>(e, request.OrderBy));
+                    queryable = queryable.OrderByDescending(e => EF.Property<object>(e, request.OrderBy));
                 }
                 else
                 {
-                    queryable = queryable.OrderBy(e => EF.Property<string>(e, request.OrderBy));
+                    queryable = queryable.OrderBy(e => EF.Property<object>(e, request.OrderBy));
                 }
             }
             var items = queryable
@@ -29,8 +31,8 @@ namespace Zenit.Share.Contract.Models
                 
             var meta = new PaginationMeta
             {
-                TotalItems = request.UseCountTotal ? queryable.Count() : null,
-                PageCount = queryable != null ? (int)Math.Ceiling((double)queryable.Count() / request.PageSize) : null,
+                TotalItems = request.UseCountTotal ? TotalItems : null,
+                PageCount = request.UseCountTotal && TotalItems > 0 ? (int)Math.Ceiling((double)TotalItems / request.PageSize) : null,
                 Page = request.Page,
                 PageSize = request.PageSize,
             };
@@ -44,11 +46,14 @@ namespace Zenit.Share.Contract.Models
 
         public static PaginationResponse<TItem> Create(IQueryable<TItem> queryable, ScrollPaginationRequest request)
         {
-            var items = queryable
-                .OrderByDescending(e => EF.Property<Guid>(e, "Id"))
-                .Where(e => EF.Property<Guid>(e, "Id").CompareTo(request.BeforeId) < 0)
-                .Take(request.PageSize)
-                .ToList();
+            var query = queryable.OrderByDescending(e => EF.Property<Guid>(e, "Id")).AsQueryable();
+    
+            if (request.BeforeId.HasValue)
+            {
+                query = query.Where(e => EF.Property<Guid>(e, "Id") < request.BeforeId.Value);
+            }
+            
+            var items = query.Take(request.PageSize).ToList();
             
             var meta = new PaginationMeta
             {
