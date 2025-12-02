@@ -7,9 +7,9 @@ namespace Zenit.Management.Data.Entities
     {
         public required string Name { get; set; }
         public required string Icon { get; set; }
-        public long? ExpenseLimit { get; set; }
-        public float? ExpenseAlertThreshold { get; set; }
+        public required string Color { get; set; }
+        public required string BackgroundColor { get; set; }
         public required CategoryGroupType GroupType { get; set; }
-        public required Guid AccountId { get; set; }
+        public Guid? AccountId { get; set; }
     }
 }

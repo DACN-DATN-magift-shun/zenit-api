@@ -3,11 +3,11 @@ using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Data.Entities
 {
-    public class CategoryGroupExpenseAlertThreshold : ManagementAuditModel
+    public class CategoryGroupSettings : ManagementAuditModel
     {
-        public required Guid Id { get; set; }
         public required CategoryGroupType GroupType { get; set; }
-        public float? Threshold { get; set; }
+        public float? ExpenseLimit { get; set; }
+        public float? ExpenseAlertThreshold { get; set; }
         public required Guid AccountId { get; set; }
     }
 }

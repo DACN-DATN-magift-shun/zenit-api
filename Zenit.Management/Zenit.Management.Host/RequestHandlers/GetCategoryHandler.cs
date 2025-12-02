@@ -9,7 +9,7 @@ namespace Zenit.Management.Host.RequestHandlers
     {
         public async Task<GetCategoryResponse> Handle(GetCategoryRequest request, CancellationToken cancellationToken)
         {
-            return await categoryService.GetCategory(request);
+            return await categoryService.CategoryGetDetail(request);
         }
     }
 }

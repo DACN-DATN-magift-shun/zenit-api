@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Zenit.Management.Data;
@@ -11,9 +12,11 @@ using Zenit.Management.Data;
 namespace Zenit.Management.Migrator.Migrations
 {
     [DbContext(typeof(ManagementDbContext))]
-    partial class ManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251202053444_AddColorColumnsToCategoryTable")]
+    partial class AddColorColumnsToCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace Zenit.Management.Migrator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AccountId")
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("BackgroundColor")
@@ -53,6 +56,12 @@ namespace Zenit.Management.Migrator.Migrations
 
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uuid");
+
+                    b.Property<float?>("ExpenseAlertThreshold")
+                        .HasColumnType("real");
+
+                    b.Property<long?>("ExpenseLimit")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("GroupType")
                         .HasColumnType("integer");
@@ -118,7 +127,7 @@ namespace Zenit.Management.Migrator.Migrations
                     b.ToTable("CategoryGroup");
                 });
 
-            modelBuilder.Entity("Zenit.Management.Data.Entities.CategoryGroupSettings", b =>
+            modelBuilder.Entity("Zenit.Management.Data.Entities.CategoryGroupExpenseAlertThreshold", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,12 +147,6 @@ namespace Zenit.Management.Migrator.Migrations
 
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uuid");
-
-                    b.Property<float?>("ExpenseAlertThreshold")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("ExpenseLimit")
-                        .HasColumnType("real");
 
                     b.Property<int>("GroupType")
                         .HasColumnType("integer");
@@ -157,53 +160,12 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("CategoryGroupSettings");
-                });
-
-            modelBuilder.Entity("Zenit.Management.Data.Entities.CategorySettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("CreatedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("DeletedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<float?>("ExpenseAlertThreshold")
+                    b.Property<float?>("Threshold")
                         .HasColumnType("real");
 
-                    b.Property<int?>("ExpenseLimit")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ModifiedById")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.ToTable("CategorySettings");
+                    b.ToTable("CategoryGroupExpenseAlertThreshold");
                 });
 
             modelBuilder.Entity("Zenit.Management.Data.Entities.ManagementSeederHistory", b =>
