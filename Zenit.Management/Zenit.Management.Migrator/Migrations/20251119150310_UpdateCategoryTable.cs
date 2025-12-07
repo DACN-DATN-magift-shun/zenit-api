@@ -11,16 +11,16 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "GroupId",
-                table: "Category");
+            // migrationBuilder.DropColumn(
+            //     name: "GroupId",
+            //     table: "Category");
 
-            migrationBuilder.AddColumn<int>(
-                name: "GroupType",
-                table: "Category",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
+            // migrationBuilder.AddColumn<int>(
+            //     name: "GroupType",
+            //     table: "Category",
+            //     type: "integer",
+            //     nullable: false,
+            //     defaultValue: 0);
         }
 
         /// <inheritdoc />
