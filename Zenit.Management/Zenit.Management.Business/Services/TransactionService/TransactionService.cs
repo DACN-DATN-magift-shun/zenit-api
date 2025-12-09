@@ -18,7 +18,7 @@ namespace Zenit.Management.Business.Services.TransactionService
     {
         public TransactionManager _TransactionManager => ServiceProvider.GetService<TransactionManager>();
 
-        public RabbitmqProducerService _RabbitmqProducerService => ServiceProvider.GetService<RabbitmqProducerService>();
+        // public RabbitmqProducerService _RabbitmqProducerService => ServiceProvider.GetService<RabbitmqProducerService>();
 
         public Task<GetAllTransactionResponse> GetAll(GetAllTransactionRequest request)
         {
@@ -65,36 +65,34 @@ namespace Zenit.Management.Business.Services.TransactionService
 
             await UnitOfWork.SaveChangesAsync();
 
-            var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
-                                                        .Include(t => t.Category)
-                                                        .FirstOrDefault();
+            // var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+            //                                             .Include(t => t.Category)
+            //                                             .FirstOrDefault();
 
-            var transactionPublishedList = new TransactionPublishedModel
-            {
-                Amount = transaction.Amount,
-                TransactionDate = transaction.TransactionDate,
-                CategoryId = transaction.CategoryId,
-                AccountId = transaction.AccountId,
-                GroupType = trackedTransaction.Category.GroupType
-            };
+            // var transactionPublishedList = new TransactionPublishedModel
+            // {
+            //     Amount = transaction.Amount,
+            //     TransactionDate = transaction.TransactionDate,
+            //     CategoryId = transaction.CategoryId,
+            //     AccountId = transaction.AccountId,
+            //     GroupType = trackedTransaction.Category.GroupType
+            // };
 
-            try
-            {
-                await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-                {
-                    Exchange = "transaction.direct.create",
-                    RoutingKey = "transaction.created",
-                    Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
-                    ExchangeType = "direct"
-                });
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (implementation depends on your logging framework)
-                throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
-            }
-
-
+            // try
+            // {
+            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            //     {
+            //         Exchange = "transaction.direct.create",
+            //         RoutingKey = "transaction.created",
+            //         Body = JsonSerializer.Serialize(new[] { transactionPublishedList }),
+            //         ExchangeType = "direct"
+            //     });
+            // }
+            // catch (Exception ex)
+            // {
+            //     // Log the exception (implementation depends on your logging framework)
+            //     throw new Exception($"Failed to publish message to RabbitMQ: {ex.Message}");
+            // }
             return Mapper.Map<UpdateTransactionResponse>(transaction);
         }
 
@@ -117,34 +115,34 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.AddRange(addedTransactions);
             await UnitOfWork.SaveChangesAsync();
 
-            try {
-                var transactionPublishedList = addedTransactions.Select(t =>
-                {
-                    var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
-                                                                .Include(tr => tr.Category)
-                                                                .FirstOrDefault();
+            // try {
+            //     var transactionPublishedList = addedTransactions.Select(t =>
+            //     {
+            //         var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
+            //                                                     .Include(tr => tr.Category)
+            //                                                     .FirstOrDefault();
 
-                    return new TransactionPublishedModel
-                    {
-                        Amount = t.Amount,
-                        TransactionDate = t.TransactionDate,
-                        CategoryId = t.CategoryId,
-                        AccountId = t.AccountId,
-                        GroupType = trackedTransaction.Category.GroupType
-                    };
-                }).ToList();
+            //         return new TransactionPublishedModel
+            //         {
+            //             Amount = t.Amount,
+            //             TransactionDate = t.TransactionDate,
+            //             CategoryId = t.CategoryId,
+            //             AccountId = t.AccountId,
+            //             GroupType = trackedTransaction.Category.GroupType
+            //         };
+            //     }).ToList();
 
-                await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-                {
-                    Exchange = "transaction.direct.create",
-                    RoutingKey = "transaction.created",
-                    Body = JsonSerializer.Serialize(transactionPublishedList),
-                    ExchangeType = "direct"
-                });
-            } catch (Exception ex)
-            {
-                throw new Exception($"Failed: {ex.Message}");
-            }
+            //     await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            //     {
+            //         Exchange = "transaction.direct.create",
+            //         RoutingKey = "transaction.created",
+            //         Body = JsonSerializer.Serialize(transactionPublishedList),
+            //         ExchangeType = "direct"
+            //     });
+            // } catch (Exception ex)
+            // {
+            //     throw new Exception($"Failed: {ex.Message}");
+            // }
 
             var result = Mapper.Map<CreateManyTransactionsResponse>(
                 new CreateManyTransactionsResponse
@@ -171,32 +169,32 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.Update(transaction);
             await UnitOfWork.SaveChangesAsync();
 
-            var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
-                                                .Include(t => t.Category)
-                                                .FirstOrDefault();
+            // var trackedTransaction = _TransactionManager.FindBy(t => t.Id == transaction.Id)
+            //                                     .Include(t => t.Category)
+            //                                     .FirstOrDefault();
             
-            var publishedModel = new TransactionPublishedModel
-            {
-                Amount = transaction.Amount,
-                TransactionDate = transaction.TransactionDate,
-                CategoryId = transaction.CategoryId,
-                AccountId = transaction.AccountId,
-                GroupType = trackedTransaction.Category.GroupType,
-                OldAmount = oldTransaction.Amount,
-                OldTransactionDate = oldTransaction.TransactionDate,
-                OldCategoryId = oldTransaction.CategoryId,
-                OldGroupType = oldTransaction.Category.GroupType
-            };
+            // var publishedModel = new TransactionPublishedModel
+            // {
+            //     Amount = transaction.Amount,
+            //     TransactionDate = transaction.TransactionDate,
+            //     CategoryId = transaction.CategoryId,
+            //     AccountId = transaction.AccountId,
+            //     GroupType = trackedTransaction.Category.GroupType,
+            //     OldAmount = oldTransaction.Amount,
+            //     OldTransactionDate = oldTransaction.TransactionDate,
+            //     OldCategoryId = oldTransaction.CategoryId,
+            //     OldGroupType = oldTransaction.Category.GroupType
+            // };
 
-            var transactionPublishedList = new List<TransactionPublishedModel> { publishedModel };
+            // var transactionPublishedList = new List<TransactionPublishedModel> { publishedModel };
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.update",
-                RoutingKey = "transaction.updated",
-                Body = JsonSerializer.Serialize(transactionPublishedList),
-                ExchangeType = "direct"
-            });
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.update",
+            //     RoutingKey = "transaction.updated",
+            //     Body = JsonSerializer.Serialize(transactionPublishedList),
+            //     ExchangeType = "direct"
+            // });
 
             return Mapper.Map<UpdateTransactionResponse>(transaction);
         }
@@ -215,22 +213,22 @@ namespace Zenit.Management.Business.Services.TransactionService
                                                             .Include(t => t.Category)
                                                             .FirstOrDefault();
 
-                beforeUpdateTransactions.Add(new Transaction
-                {
-                    Id = existingTransaction.Id,
-                    Title = existingTransaction.Title,
-                    Amount = existingTransaction.Amount,
-                    TransactionDate = existingTransaction.TransactionDate,
-                    CategoryId = existingTransaction.CategoryId,
-                    AccountId = existingTransaction.AccountId,
-                    CreatedAt = existingTransaction.CreatedAt,
-                    Category =  existingTransactionCategory.Category,
-                });
+                // beforeUpdateTransactions.Add(new Transaction
+                // {
+                //     Id = existingTransaction.Id,
+                //     Title = existingTransaction.Title,
+                //     Amount = existingTransaction.Amount,
+                //     TransactionDate = existingTransaction.TransactionDate,
+                //     CategoryId = existingTransaction.CategoryId,
+                //     AccountId = existingTransaction.AccountId,
+                //     CreatedAt = existingTransaction.CreatedAt,
+                //     Category =  existingTransactionCategory.Category,
+                // });
 
-                if (existingTransaction == null)
-                {
-                    throw new Exception($"Transaction with Id {transaction.Id} not found");
-                }
+                // if (existingTransaction == null)
+                // {
+                //     throw new Exception($"Transaction with Id {transaction.Id} not found");
+                // }
 
                 transaction.Adapt(existingTransaction);
                 updatedTransactions.Add(existingTransaction);
@@ -239,40 +237,40 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.UpdateRange(updatedTransactions);
             await UnitOfWork.SaveChangesAsync();
 
-            var transactionPublishedList = updatedTransactions.Select(t =>
-            {
-                var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
-                                                            .Include(tr => tr.Category)
-                                                            .FirstOrDefault();
+            // var transactionPublishedList = updatedTransactions.Select(t =>
+            // {
+            //     var trackedTransaction = _TransactionManager.FindBy(tr => tr.Id == t.Id)
+            //                                                 .Include(tr => tr.Category)
+            //                                                 .FirstOrDefault();
                 
-                var oldTransaction = beforeUpdateTransactions.FirstOrDefault(rt => rt.Id == t.Id);
+            //     var oldTransaction = beforeUpdateTransactions.FirstOrDefault(rt => rt.Id == t.Id);
 
-                return new TransactionPublishedModel
-                {
-                    Amount = t.Amount,
-                    TransactionDate = t.TransactionDate,
-                    CategoryId = t.CategoryId,
-                    AccountId = t.AccountId,
-                    GroupType = trackedTransaction.Category.GroupType,
-                    OldAmount = oldTransaction.Amount,
-                    OldTransactionDate = oldTransaction.TransactionDate,
-                    OldCategoryId = oldTransaction.CategoryId,
-                    OldGroupType = oldTransaction.Category.GroupType
-                };
-            }).ToList();
+            //     return new TransactionPublishedModel
+            //     {
+            //         Amount = t.Amount,
+            //         TransactionDate = t.TransactionDate,
+            //         CategoryId = t.CategoryId,
+            //         AccountId = t.AccountId,
+            //         GroupType = trackedTransaction.Category.GroupType,
+            //         OldAmount = oldTransaction.Amount,
+            //         OldTransactionDate = oldTransaction.TransactionDate,
+            //         OldCategoryId = oldTransaction.CategoryId,
+            //         OldGroupType = oldTransaction.Category.GroupType
+            //     };
+            // }).ToList();
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.update",
-                RoutingKey = "transaction.updated",
-                Body = JsonSerializer.Serialize(transactionPublishedList),
-                ExchangeType = "direct"
-            });
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.update",
+            //     RoutingKey = "transaction.updated",
+            //     Body = JsonSerializer.Serialize(transactionPublishedList),
+            //     ExchangeType = "direct"
+            // });
 
-            foreach (var transaction in updatedTransactions)
-            {
-                response.Add(Mapper.Map<UpdateTransactionResponse>(transaction));
-            }
+            // foreach (var transaction in updatedTransactions)
+            // {
+            //     response.Add(Mapper.Map<UpdateTransactionResponse>(transaction));
+            // }
 
             return Mapper.Map<UpdateManyTransactionsResponse>(
                 new UpdateManyTransactionsResponse
@@ -294,25 +292,25 @@ namespace Zenit.Management.Business.Services.TransactionService
             _TransactionManager.Delete(transaction);
             await UnitOfWork.SaveChangesAsync();
 
-            var transactionPublishedList = new List<TransactionPublishedModel>
-            {
-                new TransactionPublishedModel
-                {
-                    Amount = transaction.Amount,
-                    TransactionDate = transaction.TransactionDate,
-                    CategoryId = transaction.CategoryId,
-                    AccountId = transaction.AccountId,
-                    GroupType = transaction.Category.GroupType
-                }
-            };
+            // var transactionPublishedList = new List<TransactionPublishedModel>
+            // {
+            //     new TransactionPublishedModel
+            //     {
+            //         Amount = transaction.Amount,
+            //         TransactionDate = transaction.TransactionDate,
+            //         CategoryId = transaction.CategoryId,
+            //         AccountId = transaction.AccountId,
+            //         GroupType = transaction.Category.GroupType
+            //     }
+            // };
 
-            await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
-            {
-                Exchange = "transaction.direct.delete",
-                RoutingKey = "transaction.deleted",
-                Body = JsonSerializer.Serialize(transactionPublishedList),
-                ExchangeType = "direct"
-            });
+            // await _RabbitmqProducerService.PublishMessageAsync(new RabbitmqProducerRequest
+            // {
+            //     Exchange = "transaction.direct.delete",
+            //     RoutingKey = "transaction.deleted",
+            //     Body = JsonSerializer.Serialize(transactionPublishedList),
+            //     ExchangeType = "direct"
+            // });
         }
     }
 }

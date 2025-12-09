@@ -1,19 +1,24 @@
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+
+using Zenit.Share.Data.Events.Requests;
+using Zenit.Share.Data.Helpers;
+
+
 
 // using Zenit.Share.Data.Events.Requests;
 // using Zenit.Share.Data.Helpers;
 using Zenit.Share.Data.Interfaces;
+using Zenit.Share.Data.Models;
 // using Zenit.Share.Data.Values;
 
 
 namespace Zenit.Share.Data
 {
     public abstract class UnitOfWorkBase<TContext>(
-        TContext context
+        TContext context,
+        IPublisher publisher
     ) : IUnitOfWork
         where TContext : DbContext
     {
@@ -40,69 +45,67 @@ namespace Zenit.Share.Data
 
         public async Task SaveChangesAsync()
         {
-            // var states = new[] {
-            //     EntityState.Added,
-            //     EntityState.Modified,
-            //     EntityState.Deleted
-            // };
+            var states = new[] {
+                EntityState.Added,
+                EntityState.Modified,
+                EntityState.Deleted
+            };
 
-            // var entries = context.ChangeTracker.Entries()
-            //     .Where(e => states.Contains(e.State))
-            //     .ToList();
+            var entries = context.ChangeTracker.Entries()
+                .Where(e => states.Contains(e.State))
+                .ToList();
 
-            // var changedEntities = entries.Where(e => e.Entity is IDataModel)
-            //     .Select(e => new AuditEntityChange
-            //     {
-            //         State = e.State,
-            //         Entity = e.CurrentValues.ToObject(),
-            //         FieldChanges = EntityHelper.GetAuditFieldChanges(e)
-            //     })
-            //     .ToList();
+            var changedEntities = entries.Where(e => e.Entity is IDataModel)
+                .Select(e => new ChangedEntity
+                {
+                    Entity = e.CurrentValues.ToObject(),
+                    DataChanges = EntityHelper.GetDataChanges(e),
+                    State = e.State
+                })
+                .ToList();
 
             await context.SaveChangesAsync();
 
-            // await PublishEventRequestsAsync(changedEntities);
+            await PublishEventRequestsAsync(changedEntities);
         }
 
-        // private async Task PublishEventRequestsAsync(List<AuditEntityChange> changedEntities)
-        // {
-        //     try
-        //     {
-        //         foreach (var entity in changedEntities)
-        //         {
-        //             var IsDeleted = entity.FieldChanges?.FirstOrDefault(e => e.Field == "IsDeleted")?.NewValue;
-
-        //             if (entity.State == EntityState.Added)
-        //             {
-        //                 var entityEventType = typeof(EntityCreationEventRequest<>)
-        //                                     .MakeGenericType(entity.Entity!.GetType());
-        //                 await publisher.Publish(
-        //                     Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-        //                 );
-        //             }
-        //             else if (entity.State == EntityState.Modified && IsDeleted!.Equals(true))
-        //             {
-        //                 var entityEventType = typeof(EntityDeletionEventRequest<>)
-        //                                     .MakeGenericType(entity.Entity!.GetType());
-        //                 await publisher.Publish(
-        //                     Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-        //                 );
-        //             }
-        //             else if (entity.State == EntityState.Modified && IsDeleted!.Equals(false))
-        //             {
-        //                 var entityEventType = typeof(EntityModificationEventRequest<>)
-        //                                     .MakeGenericType(entity.Entity!.GetType());
-        //                 await publisher.Publish(
-        //                     Activator.CreateInstance(entityEventType, entity.Entity, entity.FieldChanges)!
-        //                 );
-        //             }
-
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine(ex);
-        //     }
-        // }
+        private async Task PublishEventRequestsAsync(List<ChangedEntity> changedEntities)
+        {
+            try
+            {
+                foreach (var entity in changedEntities)
+                {
+                    var deletedById = entity.Entity.GetType().GetProperty("DeletedById").GetValue(entity.Entity);
+                    if (entity.State == EntityState.Added)
+                    {
+                        await publisher.Publish(new EventCreateRequest<IDataModel>
+                        {
+                            Data = (IDataModel)entity.Entity,
+                            DataChanges = entity.DataChanges,
+                        });
+                    }
+                    else if (entity.State == EntityState.Modified && deletedById == null)
+                    {
+                        await publisher.Publish(new EventUpdateRequest<IDataModel>
+                        {
+                            Data = (IDataModel)entity.Entity,
+                            DataChanges = entity.DataChanges,
+                        });
+                    }
+                    else if (entity.State == EntityState.Deleted || deletedById != null)
+                    {
+                        await publisher.Publish(new EventDeleteRequest<IDataModel>
+                        {
+                            Data = (IDataModel)entity.Entity,
+                            DataChanges = entity.DataChanges,
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
 }
