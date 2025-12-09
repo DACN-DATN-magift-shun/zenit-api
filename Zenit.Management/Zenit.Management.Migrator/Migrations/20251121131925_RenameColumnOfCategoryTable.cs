@@ -10,10 +10,10 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "UserId",
-                table: "Category",
-                newName: "AccountId");
+            // migrationBuilder.RenameColumn(
+            //     name: "UserId",
+            //     table: "Category",
+            //     newName: "AccountId");
         }
 
         /// <inheritdoc />

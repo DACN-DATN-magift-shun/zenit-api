@@ -17,7 +17,7 @@ public class CategoryDailyStatistics : StatisticsAuditModel
     public float? PercentageChange { get; set; }
     public required Guid CategoryId { get; set; }
     public required Guid GroupId { get; set; }
-    public required Guid AccountId { get; set; }
+    // public required Guid AccountId { get; set; }
 }
 
 [Index(nameof(Date), nameof(GroupType), nameof(AccountId), IsUnique = true)]

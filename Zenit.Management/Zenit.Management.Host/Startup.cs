@@ -2,6 +2,7 @@ using Mapster;
 
 using Zenit.Management.Common.Models;
 using Zenit.Management.Data;
+using Zenit.Share.Common.Constants;
 using Zenit.Share.Data.Interfaces;
 using Zenit.Share.Host.Extensions;
 
@@ -39,7 +40,15 @@ namespace Zenit.Management.Host
 
             services.AddRabbitmqService();
             services.AddRabbitmqProducerService();
-            
+
+            services.AddDapperQuery();        
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.InstanceName = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_INSTANCE_NAME);
+                options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
+            }); 
+            services.AddCacheService();  
         }
 
         public void Configure(IApplicationBuilder app)

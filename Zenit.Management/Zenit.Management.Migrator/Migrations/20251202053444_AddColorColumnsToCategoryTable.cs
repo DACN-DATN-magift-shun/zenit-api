@@ -10,19 +10,19 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "BackgroundColor",
-                table: "Category",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+            // migrationBuilder.AddColumn<string>(
+            //     name: "BackgroundColor",
+            //     table: "Category",
+            //     type: "text",
+            //     nullable: false,
+            //     defaultValue: "");
 
-            migrationBuilder.AddColumn<string>(
-                name: "Color",
-                table: "Category",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+            // migrationBuilder.AddColumn<string>(
+            //     name: "Color",
+            //     table: "Category",
+            //     type: "text",
+            //     nullable: false,
+            //     defaultValue: "");
         }
 
         /// <inheritdoc />

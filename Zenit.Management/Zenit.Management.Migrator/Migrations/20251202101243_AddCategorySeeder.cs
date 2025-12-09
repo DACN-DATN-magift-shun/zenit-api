@@ -11,68 +11,68 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "CategoryGroupExpenseAlertThreshold");
+            // migrationBuilder.DropTable(
+            //     name: "CategoryGroupExpenseAlertThreshold");
 
-            migrationBuilder.DropColumn(
-                name: "ExpenseAlertThreshold",
-                table: "Category");
+            // migrationBuilder.DropColumn(
+            //     name: "ExpenseAlertThreshold",
+            //     table: "Category");
 
-            migrationBuilder.DropColumn(
-                name: "ExpenseLimit",
-                table: "Category");
+            // migrationBuilder.DropColumn(
+            //     name: "ExpenseLimit",
+            //     table: "Category");
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "AccountId",
-                table: "Category",
-                type: "uuid",
-                nullable: true,
-                oldClrType: typeof(Guid),
-                oldType: "uuid");
+            // migrationBuilder.AlterColumn<Guid>(
+            //     name: "AccountId",
+            //     table: "Category",
+            //     type: "uuid",
+            //     nullable: true,
+            //     oldClrType: typeof(Guid),
+            //     oldType: "uuid");
 
-            migrationBuilder.CreateTable(
-                name: "CategoryGroupSettings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    GroupType = table.Column<int>(type: "integer", nullable: false),
-                    ExpenseLimit = table.Column<float>(type: "real", nullable: true),
-                    ExpenseAlertThreshold = table.Column<float>(type: "real", nullable: true),
-                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CategoryGroupSettings", x => x.Id);
-                });
+            // migrationBuilder.CreateTable(
+            //     name: "CategoryGroupSettings",
+            //     columns: table => new
+            //     {
+            //         Id = table.Column<Guid>(type: "uuid", nullable: false),
+            //         GroupType = table.Column<int>(type: "integer", nullable: false),
+            //         ExpenseLimit = table.Column<float>(type: "real", nullable: true),
+            //         ExpenseAlertThreshold = table.Column<float>(type: "real", nullable: true),
+            //         AccountId = table.Column<Guid>(type: "uuid", nullable: false),
+            //         CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+            //         IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+            //         DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+            //         ModifiedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+            //     },
+            //     constraints: table =>
+            //     {
+            //         table.PrimaryKey("PK_CategoryGroupSettings", x => x.Id);
+            //     });
 
-            migrationBuilder.CreateTable(
-                name: "CategorySettings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ExpenseLimit = table.Column<int>(type: "integer", nullable: true),
-                    ExpenseAlertThreshold = table.Column<float>(type: "real", nullable: true),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CategorySettings", x => x.Id);
-                });
+            // migrationBuilder.CreateTable(
+            //     name: "CategorySettings",
+            //     columns: table => new
+            //     {
+            //         Id = table.Column<Guid>(type: "uuid", nullable: false),
+            //         AccountId = table.Column<Guid>(type: "uuid", nullable: false),
+            //         CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+            //         ExpenseLimit = table.Column<int>(type: "integer", nullable: true),
+            //         ExpenseAlertThreshold = table.Column<float>(type: "real", nullable: true),
+            //         CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+            //         IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+            //         DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+            //         ModifiedById = table.Column<Guid>(type: "uuid", nullable: true),
+            //         LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+            //     },
+            //     constraints: table =>
+            //     {
+            //         table.PrimaryKey("PK_CategorySettings", x => x.Id);
+            //     });
         }
 
         /// <inheritdoc />
