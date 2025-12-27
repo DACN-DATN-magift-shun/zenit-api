@@ -574,7 +574,7 @@ namespace Zenit.Management.Business.Helpers
                 INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                 WHERE DATE(""Date"") >= DATE(@FromDate) 
                     AND DATE(""Date"") <= DATE(@ToDate) 
-                    AND c.""AccountId"" = @AccountId
+                    AND (c.""AccountId"" = @AccountId OR c.""AccountId"" IS NULL)
                     AND c.""IsDeleted"" = false
                 GROUP BY c.""GroupType"", c.""Name"", c.""Id""
             ),
@@ -587,7 +587,7 @@ namespace Zenit.Management.Business.Helpers
                 INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                 WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                     AND DATE(""Date"") <= DATE(@PreviousToDate) 
-                    AND c.""AccountId"" = @AccountId
+                    AND (c.""AccountId"" = @AccountId OR c.""AccountId"" IS NULL)
                     AND c.""IsDeleted"" = false
                 GROUP BY c.""GroupType"", c.""Name"", c.""Id""
             ),
