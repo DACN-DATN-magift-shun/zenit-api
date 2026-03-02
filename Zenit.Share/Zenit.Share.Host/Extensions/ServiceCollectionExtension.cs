@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.StaticAssets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -72,6 +73,11 @@ namespace Zenit.Share.Host.Extensions
         public static IServiceCollection AddDapperQuery(this IServiceCollection services)
         {
             return services.AddServicesWithAssignedInterface<IDapperQuery>();
+        }
+
+        public static IServiceCollection AddEmailService(this IServiceCollection services)
+        {
+            return services.AddServicesWithAssignedInterface<IEmailService>();
         }
 
         public static IServiceCollection AddAuthenticationService(this IServiceCollection services)

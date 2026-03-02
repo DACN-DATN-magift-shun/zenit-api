@@ -4,7 +4,6 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 
 using Zenit.Management.Business.Helpers;
