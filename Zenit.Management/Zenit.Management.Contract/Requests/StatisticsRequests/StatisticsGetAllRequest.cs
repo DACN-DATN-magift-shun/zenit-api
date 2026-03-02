@@ -12,7 +12,8 @@ namespace Zenit.Management.Contract.Requests.StatisticsRequests
 
     public class StatisticsGetAllResponse
     {
-       public IEnumerable<StatisticsResponseItem> Items { get; set; } = [];
+       public IEnumerable<StatisticsResponseItem> GroupStatistics { get; set; } = [];
+       public IncomeExpenseStatistics IncomeExpenseStatistics { get; set; }
     }
 
     public class StatisticsResponseItem
@@ -30,5 +31,13 @@ namespace Zenit.Management.Contract.Requests.StatisticsRequests
         public float? Percentage { get; set; }
         public float? PercentageChange { get; set; }
         public string? CategoryName { get; set; }
+    }
+
+    public class IncomeExpenseStatistics
+    {
+        public long TotalIncome { get; set; }
+        public long TotalExpense { get; set; }
+        public float? IncomePercentageChange { get; set; }
+        public float? ExpensePercentageChange { get; set; }
     }
 }

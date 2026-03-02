@@ -13,7 +13,7 @@ namespace Zenit.Management.Migrator
             var force = true;
             var host = CreateHostBuilder(args).Build();
             await DbMigrator<ManagementDbContext>.Run(host, force);
-            // await DbSeeder.Run<ManagementDbContext, ManagementSeederHistory, Guid>(host);
+            await DbSeeder.Run<ManagementDbContext, ManagementSeederHistory, Guid>(host);
             return 0;
         }
 

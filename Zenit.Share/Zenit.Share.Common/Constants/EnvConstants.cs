@@ -15,5 +15,6 @@ namespace Zenit.Share.Common.Constants
         public const string RABBITMQ_PASSWORD = "RABBITMQ_PASSWORD";
         public const string REDIS_CACHE_CONNECTION = "REDIS_CACHE_CONNECTION";
         public const string REDIS_CACHE_INSTANCE_NAME = "REDIS_CACHE_INSTANCE_NAME";
+        public const string AWS_S3_BUCKET = "AWS_S3_BUCKET";
     }
 }

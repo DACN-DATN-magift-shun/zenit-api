@@ -10,18 +10,18 @@ namespace Zenit.Management.Migrator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // migrationBuilder.CreateIndex(
-            //     name: "IX_Transaction_CategoryId",
-            //     table: "Transaction",
-            //     column: "CategoryId");
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_CategoryId",
+                table: "Transaction",
+                column: "CategoryId");
 
-            // migrationBuilder.AddForeignKey(
-            //     name: "FK_Transaction_Category_CategoryId",
-            //     table: "Transaction",
-            //     column: "CategoryId",
-            //     principalTable: "Category",
-            //     principalColumn: "Id",
-            //     onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_Transaction_Category_CategoryId",
+                table: "Transaction",
+                column: "CategoryId",
+                principalTable: "Category",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />

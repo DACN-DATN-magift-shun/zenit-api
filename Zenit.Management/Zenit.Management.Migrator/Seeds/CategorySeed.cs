@@ -28,14 +28,14 @@ namespace Zenit.Management.Migrator.Seeds
                     CreatedAt = DateTime.UtcNow
                 },
 
-                // Savings
+                // Assets
                 new Category {
                     Id = Guid.NewGuid(),
                     Name = "Savings",
                     Icon = "account_balance_rounded",
                     Color = "#1B5E20",
                     BackgroundColor = "#E8FBEA",
-                    GroupType = CategoryGroupType.Savings,
+                    GroupType = CategoryGroupType.Assets,
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category {
@@ -44,7 +44,7 @@ namespace Zenit.Management.Migrator.Seeds
                     Icon = "trending_up_rounded",
                     Color = "#00695C",
                     BackgroundColor = "#E0F7F4",
-                    GroupType = CategoryGroupType.Savings,
+                    GroupType = CategoryGroupType.Assets,
                     CreatedAt = DateTime.UtcNow
                 },
 
@@ -87,26 +87,28 @@ namespace Zenit.Management.Migrator.Seeds
                     GroupType = CategoryGroupType.Entertainment,
                     CreatedAt = DateTime.UtcNow
                 },
-                // new Category
-                // {
-                //     Id = Guid.NewGuid(),
-                //     Name = "Fitness",
-                //     Icon = "fitness_center_rounded",
-                //     Color = "#F57F17",
-                //     BackgroundColor = "#FFF8E1",
-                //     GroupType = CategoryGroupType.Giving,
-                //     CreatedAt = DateTime.UtcNow
-                // },
-                // new Category
-                // {
-                //     Id = Guid.NewGuid(),
-                //     Name = "Fitness",
-                //     Icon = "fitness_center_rounded",
-                //     Color = "#F57F17",
-                //     BackgroundColor = "#FFF8E1",
-                //     GroupType = CategoryGroupType.Giving,
-                //     CreatedAt = DateTime.UtcNow
-                // }
+
+                // Income
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Salary",
+                    Icon = "attach_money_rounded",
+                    Color = "#0D47A1",
+                    BackgroundColor = "#E8F0FF",
+                    GroupType = CategoryGroupType.Income,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Investing Returns",
+                    Icon = "work_rounded",
+                    Color = "#1B5E20",
+                    BackgroundColor = "#E8FBEA",
+                    GroupType = CategoryGroupType.Income,
+                    CreatedAt = DateTime.UtcNow
+                }
             };
     }
 }

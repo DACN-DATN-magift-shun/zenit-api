@@ -3,9 +3,10 @@ namespace Zenit.Share.Common.Enums
     public enum CategoryGroupType
     {
         Neccessary,
-        Savings,
+        Assets,
         SelfDevelopment,
         Entertainment,
-        Giving
+        Giving,
+        Income
     }
 }

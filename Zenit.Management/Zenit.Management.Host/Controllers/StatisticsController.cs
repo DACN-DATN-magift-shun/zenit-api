@@ -15,5 +15,11 @@ namespace Zenit.Management.Host.Controllers
         {
             return await GetRequest<StatisticsGetAllRequest, StatisticsGetAllResponse>(request);
         }
+
+        [HttpPost("Reports")]
+        public async Task<IActionResult> GenerateReport([FromQuery] ReportCreateRequest request)
+        {
+            return await CreateRequest<ReportCreateRequest, ReportCreateResponse>(request);
+        }
     }
 }
