@@ -45,5 +45,23 @@ namespace Zenit.Management.Host.Controllers
             var request = new AccountDeleteRequest();
             return await DeleteRequest(request);
         }
+
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOTP([FromBody] AccountSendOTPRequest request)
+        {
+            return await CreateRequest<AccountSendOTPRequest, AccountSendOTPResponse>(request);
+        }
+
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOTP([FromBody] AccountVerifyOTPRequest request)
+        {
+            return await CreateRequest<AccountVerifyOTPRequest, AccountVerifyOTPResponse>(request);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] AccountResetPasswordRequest request)
+        {
+            return await CreateRequest<AccountResetPasswordRequest, AccountResetPasswordResponse>(request);
+        }
     }
 }

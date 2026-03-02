@@ -1,10 +1,17 @@
 using Mapster;
 
+using Microsoft.AspNetCore.Http.HttpResults;
+
+using SendGrid.Helpers.Mail;
+
+using Zenit.Management.Business.Constants;
 using Zenit.Management.Business.Helpers;
 using Zenit.Management.Business.Managers;
 using Zenit.Management.Contract.Errors;
 using Zenit.Management.Contract.Requests.AccountRequests;
+using Zenit.Management.Data;
 using Zenit.Management.Data.Entities;
+using Zenit.Share.Business.Requests;
 
 
 
@@ -13,6 +20,8 @@ namespace Zenit.Management.Business.Services
     public class AccountService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {
         private AccountManager _AccountManager => GetService<AccountManager>();
+        private ManagementRedisCache _RedisCache => GetService<ManagementRedisCache>();
+        private ManagementEmailService _EmailService => GetService<ManagementEmailService>();
 
         public async Task<AccountCreateResponse> Create(AccountCreateRequest request)
         {
@@ -68,15 +77,91 @@ namespace Zenit.Management.Business.Services
             return Mapper.Map<AccountLoginResponse>(tokens);
         }
 
-        // public Task<AccountForgotPasswordRequest> ForgotPassword(AccountForgotPasswordRequest request)
-        // {
-        //     return Task.FromResult(request);
-        // }
+        public async Task<AccountSendOTPResponse> SendOTP(AccountSendOTPRequest request)
+        {
+            var From = new EmailAddress(EmailServiceConstants.FROM_EMAIL, EmailServiceConstants.FROM_NAME);
+            var To = new EmailAddress(request.Email, "");
+            var Subject = "Zenit send OTP for reset password";
 
-        // public Task<AccountResetPasswordResponse> ResetPassword(AccountResetPasswordRequest request)
-        // {
-        //     return Task.FromResult(new AccountResetPasswordResponse());
-        // }
+            var OTP = new Random().Next(100000, 999999).ToString();
+            var PlainTextContent = "Your OTP for resetting password is: " + OTP;
+
+            var cacheKey = $"OTP:{request.Email}";
+            await _RedisCache.AddAsync(cacheKey, OTP, DateTimeOffset.UtcNow.AddMinutes(2));
+            
+            var sendEmailResponse = _EmailService.SendEmailAsync(new SendEmailRequest
+            {
+                From = From,
+                To = To,
+                Subject = Subject,
+                PlainTextContent = PlainTextContent
+            });
+
+            return Mapper.Map<AccountSendOTPResponse>(sendEmailResponse);
+        }
+
+        public async Task<AccountVerifyOTPResponse> VerifyOTP(AccountVerifyOTPRequest request)
+        {
+            var cacheKey = $"OTP:{request.Email}";
+            var cachedOTP = await _RedisCache.GetAsync<string>(cacheKey);
+
+            if (cachedOTP == null)
+            {
+                throw new Exception(AccountErrors.OTP_EXPIRED);
+            }
+
+            if (cachedOTP != request.OTP)
+            {
+                throw new Exception(AccountErrors.INVALID_OTP);
+            }
+
+            await _RedisCache.RemoveAsync(cacheKey);
+
+            var resetToken = Guid.NewGuid().ToString();
+            var resetTokenCacheKey = $"ResetToken:{resetToken}";
+            var resetTokenValue = _AccountManager.FindBy(current => current.Email == request.Email && !current.IsDeleted)
+                .Select(current => current.Id)
+                .FirstOrDefault();
+
+            await _RedisCache.AddAsync(resetTokenCacheKey, resetTokenValue, DateTimeOffset.UtcNow.AddMinutes(10));
+
+            return Mapper.Map<AccountVerifyOTPResponse>(
+                new AccountVerifyOTPResponse
+                {
+                    ResetToken = resetToken
+                }
+            );
+        }
+
+        public async Task<AccountResetPasswordResponse> ResetPassword(AccountResetPasswordRequest request)
+        {
+            var resetTokenCacheKey = $"ResetToken:{request.ResetToken}";
+            var accountId = await _RedisCache.GetAsync<string>(resetTokenCacheKey);
+
+            if (accountId == null)
+            {
+                throw new Exception(AccountErrors.INVALID_OR_EXPIRED_RESET_TOKEN);
+            }
+
+            await _RedisCache.RemoveAsync(resetTokenCacheKey);
+
+            var salt = Pbkdf2Helpers.GenerateSalt();
+            var hashedPassword = Pbkdf2Helpers.HashPassword(request.NewPassword, salt);
+
+            var account = _AccountManager.FindBy(current => current.Id.ToString() == accountId && !current.IsDeleted).FirstOrDefault();
+            account.Password = hashedPassword;
+            _AccountManager.Update(account);
+
+            await UnitOfWork.SaveChangesAsync();
+
+            return Mapper.Map<AccountResetPasswordResponse>(
+                new AccountResetPasswordResponse
+                {
+                    StatusCode = 200,
+                    Message = "Password reset successful"
+                }
+            );
+        }
 
         public Task<AccountGetDetailResponse> GetDetail(AccountGetDetailRequest request)
         {
@@ -95,7 +180,7 @@ namespace Zenit.Management.Business.Services
             var account = _AccountManager
                 .FindBy(current => current.Id == CurrentAccount.Id && !current.IsDeleted)
                 .FirstOrDefault();
-            
+
             if (account == null)
             {
                 throw new Exception(AccountErrors.ACCOUNT_NOT_FOUND);

@@ -11,12 +11,14 @@ namespace Zenit.Management.Host.Controllers
     public class StatisticsController : ManagementControllerBase
     {
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] StatisticsGetAllRequest request)
         {
             return await GetRequest<StatisticsGetAllRequest, StatisticsGetAllResponse>(request);
         }
 
-        [HttpPost("Reports")]
+        [HttpPost("reports")]
+        [Authorize]
         public async Task<IActionResult> GenerateReport([FromQuery] ReportCreateRequest request)
         {
             return await CreateRequest<ReportCreateRequest, ReportCreateResponse>(request);

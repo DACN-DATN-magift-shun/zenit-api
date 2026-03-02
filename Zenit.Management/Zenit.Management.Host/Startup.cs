@@ -49,6 +49,7 @@ namespace Zenit.Management.Host
                 options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
             }); 
             services.AddCacheService();  
+            services.AddEmailService();
         }
 
         public void Configure(IApplicationBuilder app)
