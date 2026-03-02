@@ -12,6 +12,6 @@ namespace Zenit.Management.Contract.Requests.AccountRequests
 
     public class AccountSendOTPResponse
     {
-        public required Response SendEmailResponse { get; set; }
+        public object? SendEmailResponse { get; set; }
     }
 }

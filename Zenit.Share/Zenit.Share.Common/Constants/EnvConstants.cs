@@ -17,5 +17,6 @@ namespace Zenit.Share.Common.Constants
         public const string REDIS_CACHE_INSTANCE_NAME = "REDIS_CACHE_INSTANCE_NAME";
         public const string AWS_S3_BUCKET = "AWS_S3_BUCKET";
         public const string SENDGRID_API_KEY = "SENDGRID_API_KEY";
+        public const string RESEND_API_KEY = "RESEND_API_KEY";
     }
 }

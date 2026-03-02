@@ -4,8 +4,8 @@ using Zenit.Share.Business.Requests;
 
 namespace Zenit.Share.Business.Interfaces
 {
-    public interface IEmailService
+    public interface ISenGridEmailService
     {
-        Task<Response> SendEmailAsync(SendEmailRequest request);
+        Task<Response> SendEmailAsync(SendGridEmailRequest request);
     }
 }
