@@ -2,7 +2,7 @@ using SendGrid.Helpers.Mail;
 
 namespace Zenit.Share.Business.Requests
 {
-    public class SendEmailRequest
+    public class SendGridEmailRequest
     {
         public required EmailAddress From { get; set; }
         public required EmailAddress To { get; set; }

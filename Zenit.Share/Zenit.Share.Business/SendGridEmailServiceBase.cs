@@ -6,10 +6,10 @@ using Zenit.Share.Business.Requests;
 
 namespace Zenit.Share.Business
 {
-    public abstract class EmailServiceBase : IEmailService
+    public abstract class SendGridEmailServiceBase : ISenGridEmailService
     {
         public SendGridClient Client { get; set; }
-        public async Task<Response> SendEmailAsync(SendEmailRequest request)
+        public async Task<Response> SendEmailAsync(SendGridEmailRequest request)
         {
             var message = MailHelper.CreateSingleEmail(
                 request.From,

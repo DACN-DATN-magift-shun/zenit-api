@@ -75,9 +75,14 @@ namespace Zenit.Share.Host.Extensions
             return services.AddServicesWithAssignedInterface<IDapperQuery>();
         }
 
-        public static IServiceCollection AddEmailService(this IServiceCollection services)
+        public static IServiceCollection AddSendGrid(this IServiceCollection services)
         {
-            return services.AddServicesWithAssignedInterface<IEmailService>();
+            return services.AddServicesWithAssignedInterface<ISenGridEmailService>();
+        }
+
+        public static IServiceCollection AddResend(this IServiceCollection services)
+        {
+            return services.AddServicesWithAssignedInterface<IResendEmailService>();
         }
 
         public static IServiceCollection AddAuthenticationService(this IServiceCollection services)

@@ -41,15 +41,16 @@ namespace Zenit.Management.Host
             services.AddRabbitmqService();
             services.AddRabbitmqProducerService();
 
-            services.AddDapperQuery();        
+            services.AddDapperQuery();
 
             services.AddStackExchangeRedisCache(options =>
             {
                 options.InstanceName = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_INSTANCE_NAME);
                 options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
-            }); 
-            services.AddCacheService();  
-            services.AddEmailService();
+            });
+            services.AddCacheService();
+            // services.AddSendGrid();
+            services.AddResend();
         }
 
         public void Configure(IApplicationBuilder app)

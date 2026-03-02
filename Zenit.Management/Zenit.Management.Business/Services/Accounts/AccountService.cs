@@ -1,8 +1,6 @@
+using Task = System.Threading.Tasks.Task;
+
 using Mapster;
-
-using Microsoft.AspNetCore.Http.HttpResults;
-
-using SendGrid.Helpers.Mail;
 
 using Zenit.Management.Business.Constants;
 using Zenit.Management.Business.Helpers;
@@ -21,7 +19,8 @@ namespace Zenit.Management.Business.Services
     {
         private AccountManager _AccountManager => GetService<AccountManager>();
         private ManagementRedisCache _RedisCache => GetService<ManagementRedisCache>();
-        private ManagementEmailService _EmailService => GetService<ManagementEmailService>();
+        // private ManagementSendGridEmailService _EmailService => GetService<ManagementSendGridEmailService>();
+        private ManagementResendEmailService _EmailService => GetService<ManagementResendEmailService>();
 
         public async Task<AccountCreateResponse> Create(AccountCreateRequest request)
         {
@@ -79,22 +78,22 @@ namespace Zenit.Management.Business.Services
 
         public async Task<AccountSendOTPResponse> SendOTP(AccountSendOTPRequest request)
         {
-            var From = new EmailAddress(EmailServiceConstants.FROM_EMAIL, EmailServiceConstants.FROM_NAME);
-            var To = new EmailAddress(request.Email, "");
+            var From = EmailServiceConstants.FROM_EMAIL;
+            var To = request.Email;
             var Subject = "Zenit send OTP for reset password";
 
             var OTP = new Random().Next(100000, 999999).ToString();
-            var PlainTextContent = "Your OTP for resetting password is: " + OTP;
+            var TextContent = "Your OTP for resetting password is: " + OTP;
 
             var cacheKey = $"OTP:{request.Email}";
             await _RedisCache.AddAsync(cacheKey, OTP, DateTimeOffset.UtcNow.AddMinutes(2));
-            
-            var sendEmailResponse = _EmailService.SendEmailAsync(new SendEmailRequest
+
+            var sendEmailResponse = _EmailService.SendEmailAsync(new ResendEmailRequest
             {
                 From = From,
                 To = To,
                 Subject = Subject,
-                PlainTextContent = PlainTextContent
+                HtmlBody = TextContent
             });
 
             return Mapper.Map<AccountSendOTPResponse>(sendEmailResponse);
