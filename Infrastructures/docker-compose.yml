@@ -20,6 +20,7 @@ services:
       context: ../
       dockerfile: Zenit.Management/Zenit.Management.Host/Dockerfile
     container_name: zenit-management-api
+    user: "1000:1000"
     environment:
       - ASPNETCORE_URLS=http://+:80
       - APP_NAME=${APP_NAME}
@@ -70,6 +71,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.50.0
     container_name: prometheus
+    user: "1000:1000"
     ports:
       - "9090:9090"
     volumes:
@@ -179,6 +181,7 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
+    user: "1000:1000"
     ports:
       - "8080:8080"
       - "50000:50000"
