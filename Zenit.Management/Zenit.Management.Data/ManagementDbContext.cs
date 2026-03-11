@@ -40,6 +40,7 @@ namespace Zenit.Management.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("management");
             modelBuilder.RegisterAllEntities();
             base.OnModelCreating(modelBuilder);
         }

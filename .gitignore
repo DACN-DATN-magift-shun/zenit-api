@@ -3,4 +3,18 @@ obj/
 bin/
 *.env
 
-Infrastructures/
+# Rabbitmq data
+**/rabbitmq/*
+
+# Redis data
+**/redis/*
+
+# Grafana data
+**/grafana_data/*
+
+# Jenkins
+**/jenkins_home/*
+**/jenkins_docker_certs/*
+
+# Prometheus data
+**/prometheus_data/*

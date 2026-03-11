@@ -1,0 +1,229 @@
+services:
+  # rabbitmq:
+  #   image: "rabbitmq:3-management"
+  #   container_name: "rabbitmq"
+  #   restart: always
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+  #     RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+  #   volumes:
+  #     - ./Infrastructures/rabbitmq/data:/var/lib/rabbitmq
+  #     - ./Infrastructures/rabbitmq/log:/var/log/rabbitmq
+  #     - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+  
+  # Management API
+  zenit-management-api:
+    build:
+      context: ../
+      dockerfile: Zenit.Management/Zenit.Management.Host/Dockerfile
+    container_name: zenit-management-api
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - APP_NAME=${APP_NAME}
+      - MANAGEMENT_CONNECTION=${MANAGEMENT_CONNECTION}
+      - JWT_SECRET=${JWT_SECRET}
+      - IS_PRODUCTION=${IS_PRODUCTION}
+      - REDIS_CACHE_CONNECTION=${REDIS_CACHE_CONNECTION}
+      - REDIS_CACHE_INSTANCE_NAME=${REDIS_CACHE_INSTANCE_NAME}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - GF_USERNAME=${GF_USERNAME}
+      - GF_PASSWORD=${GF_PASSWORD}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.management.rule=PathPrefix(`/Accounts`) || PathPrefix(`/Categories`) || PathPrefix(`/Statistics`) || PathPrefix(`/Transactions`)"
+      - "traefik.http.services.management.loadbalancer.server.port=80"
+    networks:
+      - traefik
+  
+  redis:
+    image: "redis:latest"
+    container_name: "redis"
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./Infrastructures/redis/data:/var/lib/redis
+
+  # Prometheus & Grafana
+  node-exporter:
+    image: prom/node-exporter:v1.8.1
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.fs-types-exclude=^(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus_data:/prometheus
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/console_templates'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+      - ./configs/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./configs/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./dashboards:/opt/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+
+  # ELK Stack
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.1
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+  
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.1
+    container_name: filebeat
+    user: root
+    environment:
+      - "ELASTICSEARCH_HOST=elasticsearch:9200"
+      - "KIBANA_HOST=kibana:5601"
+    volumes:
+      - ./configs/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - elasticsearch
+      - kibana
+    command: filebeat -e -strict.perms=false
+  
+  # Jenkins
+  jenkins-docker:
+    image: docker:dind
+    container_name: jenkins-docker
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=
+      - "JAVA_OPTS=-Xmx256m -Xms256m"
+    volumes:
+      - ./jenkins_docker_certs:/certs/client
+      - ./jenkins_home:/var/jenkins_home
+    restart: always
+    ports:
+      - "2375:2375"
+    command: --storage-driver overlay2
+    networks:
+      - jenkins
+
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+      - ./jenkins_docker_certs:/certs:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    environment:
+      - DOCKER_HOST=tcp://jenkins-docker:2375
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_CERT_VERIFY=1
+    depends_on:
+      - jenkins-docker
+    restart: always
+    networks:
+      - jenkins
+  
+  # Traefik
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    ports:
+      - "8000:80"
+      - "443:443"
+      - "8081:8080"
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  jenkins:
+    driver: bridge
+  traefik:
+    driver: bridge
+  
+    

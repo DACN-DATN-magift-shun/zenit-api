@@ -1,88 +1,107 @@
-using Mapster;
+    using Mapster;
 
-using Zenit.Management.Common.Models;
-using Zenit.Management.Data;
-using Zenit.Share.Common.Constants;
-using Zenit.Share.Data.Interfaces;
-using Zenit.Share.Host.Extensions;
+    using OpenTelemetry.Metrics;
+    using OpenTelemetry.Resources;
 
-namespace Zenit.Management.Host
-{
-    public class Startup(IConfiguration Configuration)
+    using Zenit.Management.Common.Models;
+    using Zenit.Management.Data;
+    using Zenit.Share.Common.Constants;
+    using Zenit.Share.Data.Interfaces;
+    using Zenit.Share.Host.Extensions;
+
+    namespace Zenit.Management.Host
     {
-        public void ConfigureServices(IServiceCollection services)
+        public class Startup(IConfiguration Configuration)
         {
-            services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddHttpContextAccessor();
-            services.AddSwagger();
-
-            services.AddCors();
-            services.AddHttpClient();
-
-            services.AddDbContext<ManagementDbContext>();
-
-            services.AddMediatR((configs) =>
+            public void ConfigureServices(IServiceCollection services)
             {
-                configs.RegisterServicesFromAssemblyContaining<Startup>();
-            });
+                services.AddControllers();
+                services.AddEndpointsApiExplorer();
+                services.AddHttpContextAccessor();
+                services.AddSwagger();
 
-            services.AddApplicationService();
-            services.AddDomainService();
+                services.AddCors();
+                services.AddHttpClient();
 
-            services.AddAuthenticationService();
-            services.AddAuthorization();
+                services.AddDbContext<ManagementDbContext>();
 
-            services.AddCurrentAccount();
-            services.AddScoped(typeof(IRepository<>), typeof(ManagementRepository<>));
-            services.AddScoped<IUnitOfWork, ManagementUnitOfWork>();
-            services.AddMapster();
+                services.AddMediatR((configs) =>
+                {
+                    configs.RegisterServicesFromAssemblyContaining<Startup>();
+                });
 
-            services.AddRabbitmqService();
-            services.AddRabbitmqProducerService();
+                services.AddApplicationService();
+                services.AddDomainService();
 
-            services.AddDapperQuery();
+                services.AddAuthenticationService();
+                services.AddAuthorization();
 
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.InstanceName = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_INSTANCE_NAME);
-                options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
-            });
-            services.AddCacheService();
-            // services.AddSendGrid();
-            services.AddResend();
-        }
+                services.AddCurrentAccount();
+                services.AddScoped(typeof(IRepository<>), typeof(ManagementRepository<>));
+                services.AddScoped<IUnitOfWork, ManagementUnitOfWork>();
+                services.AddMapster();
 
-        public void Configure(IApplicationBuilder app)
-        {
-            var isProduction = Environment.GetEnvironmentVariable("IS_PRODUCTION");
-            if (isProduction == "false")
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                services.AddRabbitmqService();
+                services.AddRabbitmqProducerService();
+
+                services.AddDapperQuery();
+
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.InstanceName = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_INSTANCE_NAME);
+                    options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
+                });
+                services.AddCacheService();
+                // services.AddSendGrid();
+                services.AddResend();
+                services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource
+                    .AddService(
+                        serviceName: "zenit-management-api",
+                        serviceVersion: "1.0.0"
+                    )
+                )
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()   // HTTP request metrics
+                    .AddHttpClientInstrumentation()   // Outbound HTTP metrics
+                    .AddRuntimeInstrumentation()      // GC, ThreadPool, Memory
+                    .AddMeter("Npgsql")    // PostgreSQL metrics
+                    .AddPrometheusExporter()          // Expose /metrics endpoint
+                );
             }
 
-            app.UseCors(builder =>
+            public void Configure(IApplicationBuilder app)
             {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+                var isProduction = Environment.GetEnvironmentVariable("IS_PRODUCTION");
+                if (isProduction == "false")
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
 
-            app.UseGlobalExceptionHandler();
+                app.UseCors(builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
 
-            app.UseRouting();
+                app.UseGlobalExceptionHandler();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+                app.UseRouting();
 
-            app.UseCurrentAccount<ManagementCurrentAccount>();
+                app.UseAuthentication();
+                app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapDefaultControllerRoute();
-            });
+
+                app.UseCurrentAccount<ManagementCurrentAccount>();
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapPrometheusScrapingEndpoint("/metrics");
+                });
+            }
         }
     }
-}
