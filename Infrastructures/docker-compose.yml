@@ -16,9 +16,7 @@ services:
   
   # Management API
   zenit-management-api:
-    build:
-      context: ../
-      dockerfile: Zenit.Management/Zenit.Management.Host/Dockerfile
+    image: van032004/zenit-management-api:latest
     container_name: zenit-management-api
     user: "1000:1000"
     environment:
