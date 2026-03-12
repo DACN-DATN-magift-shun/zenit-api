@@ -5,14 +5,14 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 1m
     static_configs:
-    - targets: ['host.docker.internal:9090']
+    - targets: ['172.17.0.1:9090']
   
   - job_name: 'node-exporter'
     static_configs:
-    - targets: ['host.docker.internal:9100']
+    - targets: ['node-exporter:9100']
 
   - job_name: 'zenit-management-api'
     scrape_interval: 10s
     static_configs:
-    - targets: ['host.docker.internal:5212']
+    - targets: ['zenit-management-api:80']
 
