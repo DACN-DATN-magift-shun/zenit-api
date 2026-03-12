@@ -36,7 +36,7 @@ services:
       - GF_PASSWORD=${GF_PASSWORD}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.management.rule=PathPrefix(`/Accounts`) || PathPrefix(`/Categories`) || PathPrefix(`/Statistics`) || PathPrefix(`/Transactions`)"
+      - "traefik.http.routers.management.rule=PathPrefix(`/Accounts`) || PathPrefix(`/Categories`) || PathPrefix(`/Statistics`) || PathPrefix(`/Transactions`) || PathPrefix(`/metrics`)"
       - "traefik.http.services.management.loadbalancer.server.port=80"
     networks:
       - traefik

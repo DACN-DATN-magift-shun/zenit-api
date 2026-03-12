@@ -6,6 +6,7 @@ usage() {
     echo "Available commands:"
     echo "build             Build Docker image for the app and monitoring service"
     echo "up                Run app and monitoring service container"
+    echo "restart           Restart app and monitoring service container"
 }
 
 if [[ -z "$cmd" ]]; 
@@ -27,6 +28,10 @@ build() {
 
 up() {
     docker run -d --env-file Zenit.Management/Zenit.Management.Host/.env --network infrastructures_default -p 5212:5212 --name zenit-management-api $APP_IMAGE_NAME:latest
+}
+
+restart() {
+    docker restart zenit-management-api
 }
 
 case $cmd in
