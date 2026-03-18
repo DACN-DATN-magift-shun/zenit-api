@@ -6,10 +6,10 @@ namespace Zenit.Management.Business.Helpers
         {
             return @"
                 /* CategoryGroupDailyStatistics */
-                INSERT INTO ""CategoryGroupDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""GroupType"", ""AccountId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
+                INSERT INTO zenit_management_dev.""CategoryGroupDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""GroupType"", ""AccountId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
                 VALUES (@CategoryGroupStatsId, @Date::date, @TotalAmount, 0.0, 0.0, @GroupType, @AccountId, @CreatedById, NOW(), false)
                 ON CONFLICT (""Date"", ""GroupType"", ""AccountId"") DO UPDATE
-                SET ""TotalAmount"" = ""CategoryGroupDailyStatistics"".""TotalAmount"" + @TotalAmount,
+                SET ""TotalAmount"" = zenit_management_dev.""CategoryGroupDailyStatistics"".""TotalAmount"" + @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById;
 
@@ -17,7 +17,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH TotalAmounts AS (
                     SELECT 
                         SUM(""TotalAmount"") as Total
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date
                         AND ""AccountId"" = @AccountId
                 ), 
@@ -26,7 +26,7 @@ namespace Zenit.Management.Business.Helpers
                         ""GroupType"",
                         ""Percentage"",
                         ""TotalAmount""
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date - INTERVAL '1 day' 
                         AND ""AccountId"" = @AccountId
                         AND ""GroupType"" = @GroupType  -- Chỉ lấy data của GroupType cần update PercentageChange
@@ -49,30 +49,30 @@ namespace Zenit.Management.Business.Helpers
                                 END
                             ELSE cgds.""PercentageChange""  -- Giữ nguyên giá trị cũ cho các GroupType khác
                         END AS ""NewPercentageChange""
-                    FROM ""CategoryGroupDailyStatistics"" cgds
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgds
                     CROSS JOIN TotalAmounts ta
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""GroupType"" = cgds.""GroupType""
                     WHERE cgds.""Date"" = @Date::date 
                         AND cgds.""AccountId"" = @AccountId
                 )
-                UPDATE ""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""Percentage"" = cv.""NewPercentage"",
                     ""PercentageChange"" = cv.""NewPercentageChange""
                 FROM CalculatedValues cv
-                WHERE ""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
+                WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
 
                 /* CategoryDailyStatistics */
                 WITH CategoryGroupId AS (
                     SELECT ""Id"" 
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date
                         AND ""GroupType"" = @GroupType
                         AND ""AccountId"" = @AccountId
-                ) INSERT INTO ""CategoryDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""CategoryId"", ""GroupId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
+                ) INSERT INTO zenit_management_dev.""CategoryDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""CategoryId"", ""GroupId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
                 VALUES (@CategoryStatsId, @Date::date, @TotalAmount, 0.0, 0.0, @CategoryId, (SELECT ""Id"" FROM CategoryGroupId), @CreatedById, NOW(), false)
                 ON CONFLICT (""Date"", ""CategoryId"") DO UPDATE
-                SET ""TotalAmount"" = ""CategoryDailyStatistics"".""TotalAmount"" + @TotalAmount,
+                SET ""TotalAmount"" = zenit_management_dev.""CategoryDailyStatistics"".""TotalAmount"" + @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById;
 
@@ -87,8 +87,8 @@ namespace Zenit.Management.Business.Helpers
                             WHEN gds.""TotalAmount"" = 0 THEN 0.0
                             ELSE (cds.""TotalAmount""::decimal / gds.""TotalAmount"" * 100)
                         END AS ""NewPercentage""
-                    FROM ""CategoryDailyStatistics"" cds
-                    INNER JOIN ""CategoryGroupDailyStatistics"" gds 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" gds 
                         ON cds.""GroupId"" = gds.""Id""
                     WHERE cds.""Date"" = @Date::date
                         AND gds.""Date"" = @Date::date
@@ -100,8 +100,8 @@ namespace Zenit.Management.Business.Helpers
                         cds_prev.""CategoryId"",
                         cds_prev.""Percentage"",
                         cds_prev.""TotalAmount""
-                    FROM ""CategoryDailyStatistics"" cds_prev
-                    INNER JOIN ""CategoryGroupDailyStatistics"" cgds_prev 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds_prev
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" cgds_prev 
                         ON cds_prev.""GroupId"" = cgds_prev.""Id""
                     WHERE cds_prev.""Date"" = @Date::date - INTERVAL '1 day' 
                         AND cgds_prev.""GroupType"" = @GroupType
@@ -120,11 +120,11 @@ namespace Zenit.Management.Business.Helpers
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""CategoryId"" = ud.""CategoryId""
                 )
-                UPDATE ""CategoryDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryDailyStatistics""
                 SET ""Percentage"" = fc.""NewPercentage"",
                     ""PercentageChange"" = fc.""NewPercentageChange""
                 FROM FinalCalculation fc
-                WHERE ""CategoryDailyStatistics"".""Id"" = fc.""Id"";
+                WHERE zenit_management_dev.""CategoryDailyStatistics"".""Id"" = fc.""Id"";
             ";
         }
 
@@ -132,7 +132,7 @@ namespace Zenit.Management.Business.Helpers
         {
             return @"
                 /* CategoryGroupDailyStatistics */
-                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""TotalAmount"" = ""TotalAmount"" - @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -144,7 +144,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH TotalAmounts AS (
                     SELECT 
                         SUM(""TotalAmount"") as Total
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date 
                         AND ""AccountId"" = @AccountId
                 ), 
@@ -153,7 +153,7 @@ namespace Zenit.Management.Business.Helpers
                         ""GroupType"",
                         ""Percentage"",
                         ""TotalAmount""
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date - INTERVAL '1 day' 
                         AND ""AccountId"" = @AccountId
                         AND ""GroupType"" = @GroupType  -- Chỉ lấy data của GroupType cần update PercentageChange
@@ -177,25 +177,25 @@ namespace Zenit.Management.Business.Helpers
                                 END
                             ELSE cgds.""PercentageChange""  -- Giữ nguyên giá trị cũ cho các GroupType khác
                         END AS ""NewPercentageChange""
-                    FROM ""CategoryGroupDailyStatistics"" cgds
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgds
                     CROSS JOIN TotalAmounts ta
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""GroupType"" = cgds.""GroupType""
                     WHERE cgds.""Date"" = @Date::date 
                         AND cgds.""AccountId"" = @AccountId
                 )
-                UPDATE ""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""Percentage"" = cv.""NewPercentage"",
                     ""PercentageChange"" = cv.""NewPercentageChange""
                 FROM CalculatedValues cv
-                WHERE ""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
+                WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
 
                 /* CategoryDailyStatistics */
-                UPDATE zenit_management_dev.""CategoryDailyStatistics"" cds
+                UPDATE zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
                 SET ""TotalAmount"" = cds.""TotalAmount"" - @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
-                FROM ""CategoryGroupDailyStatistics"" cgd 
+                FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgd 
                 WHERE cds.""GroupId"" = cgd.""Id""
                     AND cds.""Date"" = @Date::date 
                     AND cds.""CategoryId"" = @CategoryId
@@ -212,8 +212,8 @@ namespace Zenit.Management.Business.Helpers
                             WHEN gds.""TotalAmount"" = 0 THEN 0.0
                             ELSE (cds.""TotalAmount""::decimal / gds.""TotalAmount"" * 100)
                         END AS ""NewPercentage""
-                    FROM ""CategoryDailyStatistics"" cds
-                    INNER JOIN ""CategoryGroupDailyStatistics"" gds 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" gds 
                         ON cds.""GroupId"" = gds.""Id""
                     WHERE cds.""Date"" = @Date::date
                         AND gds.""Date"" = @Date::date
@@ -225,8 +225,8 @@ namespace Zenit.Management.Business.Helpers
                         cds_prev.""CategoryId"",
                         cds_prev.""Percentage"",
                         cds_prev.""TotalAmount""
-                    FROM ""CategoryDailyStatistics"" cds_prev
-                    INNER JOIN ""CategoryGroupDailyStatistics"" cgds_prev 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds_prev
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" cgds_prev 
                         ON cds_prev.""GroupId"" = cgds_prev.""Id""
                     WHERE cds_prev.""Date"" = @Date::date - INTERVAL '1 day' 
                         AND cgds_prev.""GroupType"" = @GroupType
@@ -246,11 +246,11 @@ namespace Zenit.Management.Business.Helpers
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""CategoryId"" = ud.""CategoryId""
                 )
-                UPDATE ""CategoryDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryDailyStatistics""
                 SET ""Percentage"" = fc.""NewPercentage"",
                     ""PercentageChange"" = fc.""NewPercentageChange""
                 FROM FinalCalculation fc
-                WHERE ""CategoryDailyStatistics"".""Id"" = fc.""Id"";
+                WHERE zenit_management_dev.""CategoryDailyStatistics"".""Id"" = fc.""Id"";
             ";
         }
 
@@ -258,7 +258,7 @@ namespace Zenit.Management.Business.Helpers
         {
             return @"
                 -- Bước 1A: Trừ TotalAmount khỏi CategoryGroupDailyStatistics ngày cũ
-                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""TotalAmount"" = ""TotalAmount"" - @OldAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -270,7 +270,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH TotalAmountsOld AS (
                     SELECT 
                         SUM(""TotalAmount"") as Total
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @OldTransactionDate::date
                         AND ""AccountId"" = @AccountId
                 ), 
@@ -279,7 +279,7 @@ namespace Zenit.Management.Business.Helpers
                         ""GroupType"",
                         ""Percentage"",
                         ""TotalAmount""
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @OldTransactionDate::date - INTERVAL '1 day' 
                         AND ""AccountId"" = @AccountId
                         AND ""GroupType"" = @OldGroupType
@@ -302,27 +302,27 @@ namespace Zenit.Management.Business.Helpers
                                 END
                             ELSE cgds.""PercentageChange""
                         END AS ""NewPercentageChange""
-                    FROM ""CategoryGroupDailyStatistics"" cgds
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgds
                     CROSS JOIN TotalAmountsOld tao
                     LEFT JOIN PreviousDayDataOldGroup pddog 
                         ON pddog.""GroupType"" = cgds.""GroupType""
                     WHERE cgds.""Date"" = @OldTransactionDate::date 
                         AND cgds.""AccountId"" = @AccountId
                 )
-                UPDATE ""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""Percentage"" = cvog.""NewPercentage"",
                     ""PercentageChange"" = cvog.""NewPercentageChange"",
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
                 FROM CalculatedValuesOldGroup cvog
-                WHERE ""CategoryGroupDailyStatistics"".""Id"" = cvog.""Id"";
+                WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cvog.""Id"";
 
                 -- Bước 1C: Trừ TotalAmount khỏi CategoryDailyStatistics ngày cũ
-                UPDATE zenit_management_dev.""CategoryDailyStatistics"" cds
+                UPDATE zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
                 SET ""TotalAmount"" = cds.""TotalAmount"" - @OldAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
-                FROM ""CategoryGroupDailyStatistics"" cgd 
+                FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgd 
                 WHERE cds.""GroupId"" = cgd.""Id""
                     AND cds.""Date"" = @OldTransactionDate::date 
                     AND cds.""CategoryId"" = @OldCategoryId
@@ -339,8 +339,8 @@ namespace Zenit.Management.Business.Helpers
                             WHEN gds.""TotalAmount"" = 0 THEN 0.0
                             ELSE (cds.""TotalAmount""::decimal / gds.""TotalAmount"" * 100)
                         END AS ""NewPercentage""
-                    FROM ""CategoryDailyStatistics"" cds
-                    INNER JOIN ""CategoryGroupDailyStatistics"" gds 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" gds 
                         ON cds.""GroupId"" = gds.""Id""
                     WHERE cds.""Date"" = @OldTransactionDate::date
                         AND gds.""Date"" = @OldTransactionDate::date
@@ -352,8 +352,8 @@ namespace Zenit.Management.Business.Helpers
                         cds_prev.""CategoryId"",
                         cds_prev.""Percentage"",
                         cds_prev.""TotalAmount""
-                    FROM ""CategoryDailyStatistics"" cds_prev
-                    INNER JOIN ""CategoryGroupDailyStatistics"" cgds_prev 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds_prev
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" cgds_prev 
                         ON cds_prev.""GroupId"" = cgds_prev.""Id""
                     WHERE cds_prev.""Date"" = @OldTransactionDate::date - INTERVAL '1 day' 
                         AND cgds_prev.""AccountId"" = @AccountId
@@ -373,19 +373,19 @@ namespace Zenit.Management.Business.Helpers
                     LEFT JOIN PreviousDayDataOld pddo 
                         ON pddo.""CategoryId"" = udo.""CategoryId""
                 )
-                UPDATE ""CategoryDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryDailyStatistics""
                 SET ""Percentage"" = fco.""NewPercentage"",
                     ""PercentageChange"" = fco.""NewPercentageChange"",
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
                 FROM FinalCalculationOld fco
-                WHERE ""CategoryDailyStatistics"".""Id"" = fco.""Id"";
+                WHERE zenit_management_dev.""CategoryDailyStatistics"".""Id"" = fco.""Id"";
 
                 -- Bước 2A: Thêm/Cập nhật TotalAmount cho CategoryGroupDailyStatistics ngày MỚI
-                INSERT INTO ""CategoryGroupDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""GroupType"", ""AccountId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
+                INSERT INTO zenit_management_dev.""CategoryGroupDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""GroupType"", ""AccountId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
                 VALUES (@CategoryGroupStatsId, @Date::date, @TotalAmount, 0.0, 0.0, @GroupType, @AccountId, @CreatedById, NOW(), false)
                 ON CONFLICT (""Date"", ""GroupType"", ""AccountId"") DO UPDATE
-                SET ""TotalAmount"" = ""CategoryGroupDailyStatistics"".""TotalAmount"" + @TotalAmount,
+                SET ""TotalAmount"" = zenit_management_dev.""CategoryGroupDailyStatistics"".""TotalAmount"" + @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById;
 
@@ -393,7 +393,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH TotalAmounts AS (
                     SELECT 
                         SUM(""TotalAmount"") as Total
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date
                         AND ""AccountId"" = @AccountId
                 ), 
@@ -402,7 +402,7 @@ namespace Zenit.Management.Business.Helpers
                         ""GroupType"",
                         ""Percentage"",
                         ""TotalAmount""
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date - INTERVAL '1 day' 
                         AND ""AccountId"" = @AccountId
                         AND ""GroupType"" = @GroupType
@@ -425,33 +425,33 @@ namespace Zenit.Management.Business.Helpers
                                 END
                             ELSE cgds.""PercentageChange""
                         END AS ""NewPercentageChange""
-                    FROM ""CategoryGroupDailyStatistics"" cgds
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics"" cgds
                     CROSS JOIN TotalAmounts ta
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""GroupType"" = cgds.""GroupType""
                     WHERE cgds.""Date"" = @Date::date
                         AND cgds.""AccountId"" = @AccountId
                 )
-                UPDATE ""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""Percentage"" = cv.""NewPercentage"",
                     ""PercentageChange"" = cv.""NewPercentageChange"",
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
                 FROM CalculatedValues cv
-                WHERE ""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
+                WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
 
                 -- Bước 2C: Thêm/Cập nhật TotalAmount cho CategoryDailyStatistics ngày MỚI
                 WITH CategoryGroupId AS (
                     SELECT ""Id"" 
-                    FROM ""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE ""Date"" = @Date::date
                         AND ""GroupType"" = @GroupType
                         AND ""AccountId"" = @AccountId
                 ) 
-                INSERT INTO ""CategoryDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""CategoryId"", ""GroupId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
+                INSERT INTO zenit_management_dev.""CategoryDailyStatistics"" (""Id"", ""Date"", ""TotalAmount"", ""Percentage"", ""PercentageChange"", ""CategoryId"", ""GroupId"", ""CreatedById"", ""CreatedAt"", ""IsDeleted"")
                 VALUES (@CategoryStatsId, @Date::date, @TotalAmount, 0.0, 0.0, @CategoryId, (SELECT ""Id"" FROM CategoryGroupId), @CreatedById, NOW(), false)
                 ON CONFLICT (""Date"", ""CategoryId"") DO UPDATE
-                SET ""TotalAmount"" = ""CategoryDailyStatistics"".""TotalAmount"" + @TotalAmount,
+                SET ""TotalAmount"" = zenit_management_dev.""CategoryDailyStatistics"".""TotalAmount"" + @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById;
 
@@ -466,8 +466,8 @@ namespace Zenit.Management.Business.Helpers
                             WHEN gds.""TotalAmount"" = 0 THEN 0.0
                             ELSE (cds.""TotalAmount""::decimal / gds.""TotalAmount"" * 100)
                         END AS ""NewPercentage""
-                    FROM ""CategoryDailyStatistics"" cds
-                    INNER JOIN ""CategoryGroupDailyStatistics"" gds 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" gds 
                         ON cds.""GroupId"" = gds.""Id""
                     WHERE cds.""Date"" = @Date::date
                         AND gds.""Date"" = @Date::date
@@ -479,8 +479,8 @@ namespace Zenit.Management.Business.Helpers
                         cds_prev.""CategoryId"",
                         cds_prev.""Percentage"",
                         cds_prev.""TotalAmount""
-                    FROM ""CategoryDailyStatistics"" cds_prev
-                    INNER JOIN ""CategoryGroupDailyStatistics"" cgds_prev 
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds_prev
+                    INNER JOIN zenit_management_dev.""CategoryGroupDailyStatistics"" cgds_prev 
                         ON cds_prev.""GroupId"" = cgds_prev.""Id""
                     WHERE cds_prev.""Date"" = @Date::date - INTERVAL '1 day' 
                         AND cgds_prev.""AccountId"" = @AccountId
@@ -500,13 +500,13 @@ namespace Zenit.Management.Business.Helpers
                     LEFT JOIN PreviousDayData pdd 
                         ON pdd.""CategoryId"" = ud.""CategoryId""
                 )
-                UPDATE ""CategoryDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryDailyStatistics""
                 SET ""Percentage"" = fc.""NewPercentage"",
                     ""PercentageChange"" = fc.""NewPercentageChange"",
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
                 FROM FinalCalculation fc
-                WHERE ""CategoryDailyStatistics"".""Id"" = fc.""Id"";
+                WHERE zenit_management_dev.""CategoryDailyStatistics"".""Id"" = fc.""Id"";
             ";
         }
 
@@ -516,7 +516,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH IntervalTotals AS (
                     SELECT
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -524,7 +524,7 @@ namespace Zenit.Management.Business.Helpers
                 PreviousIntervalTotals AS (
                     SELECT
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -533,7 +533,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         ""GroupType"",
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -543,7 +543,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         ""GroupType"",
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -553,7 +553,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
                         COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -562,7 +562,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
                         COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
-                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -588,7 +588,7 @@ namespace Zenit.Management.Business.Helpers
                         c.""GroupType"",
                         c.""Name"" AS CategoryName,
                         SUM(cds.""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
                     INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
@@ -601,7 +601,7 @@ namespace Zenit.Management.Business.Helpers
                         c.""GroupType"",
                         c.""Name"" AS CategoryName,
                         SUM(cds.""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
+                    FROM zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
                     INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
