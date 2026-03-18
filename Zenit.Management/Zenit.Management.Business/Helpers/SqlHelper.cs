@@ -132,7 +132,7 @@ namespace Zenit.Management.Business.Helpers
         {
             return @"
                 /* CategoryGroupDailyStatistics */
-                UPDATE zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""TotalAmount"" = ""TotalAmount"" - @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -191,7 +191,7 @@ namespace Zenit.Management.Business.Helpers
                 WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cv.""Id"";
 
                 /* CategoryDailyStatistics */
-                UPDATE zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
+                UPDATE zenit_management_dev.""CategoryDailyStatistics"" cds
                 SET ""TotalAmount"" = cds.""TotalAmount"" - @TotalAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -258,7 +258,7 @@ namespace Zenit.Management.Business.Helpers
         {
             return @"
                 -- Bước 1A: Trừ TotalAmount khỏi CategoryGroupDailyStatistics ngày cũ
-                UPDATE zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                UPDATE zenit_management_dev.""CategoryGroupDailyStatistics""
                 SET ""TotalAmount"" = ""TotalAmount"" - @OldAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -318,7 +318,7 @@ namespace Zenit.Management.Business.Helpers
                 WHERE zenit_management_dev.""CategoryGroupDailyStatistics"".""Id"" = cvog.""Id"";
 
                 -- Bước 1C: Trừ TotalAmount khỏi CategoryDailyStatistics ngày cũ
-                UPDATE zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
+                UPDATE zenit_management_dev.""CategoryDailyStatistics"" cds
                 SET ""TotalAmount"" = cds.""TotalAmount"" - @OldAmount,
                     ""LastModifiedAt"" = NOW(),
                     ""ModifiedById"" = @ModifiedById
@@ -516,7 +516,7 @@ namespace Zenit.Management.Business.Helpers
                 WITH IntervalTotals AS (
                     SELECT
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -524,7 +524,7 @@ namespace Zenit.Management.Business.Helpers
                 PreviousIntervalTotals AS (
                     SELECT
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -533,7 +533,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         ""GroupType"",
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -543,7 +543,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         ""GroupType"",
                         SUM(""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -553,7 +553,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
                         COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
                         AND ""AccountId"" = @AccountId
@@ -562,7 +562,7 @@ namespace Zenit.Management.Business.Helpers
                     SELECT
                         COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
                         COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryGroupDailyStatistics""
+                    FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
                         AND ""AccountId"" = @AccountId
@@ -588,7 +588,7 @@ namespace Zenit.Management.Business.Helpers
                         c.""GroupType"",
                         c.""Name"" AS CategoryName,
                         SUM(cds.""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
                     INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
@@ -601,7 +601,7 @@ namespace Zenit.Management.Business.Helpers
                         c.""GroupType"",
                         c.""Name"" AS CategoryName,
                         SUM(cds.""TotalAmount"") AS TotalAmount
-                    FROM zenit_management_dev.zenit_management_dev.""CategoryDailyStatistics"" cds
+                    FROM zenit_management_dev.""CategoryDailyStatistics"" cds
                     INNER JOIN zenit_management_dev.""Category"" c ON cds.""CategoryId"" = c.""Id""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 
