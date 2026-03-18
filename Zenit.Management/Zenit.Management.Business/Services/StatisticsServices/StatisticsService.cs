@@ -81,7 +81,7 @@ namespace Zenit.Management.Business.Services
                 IncomeExpenseStatistics = JsonSerializer.Deserialize<IncomeExpenseStatistics>(root.GetProperty("IncomeExpenseSummary").GetRawText(), jsonOptions)
             };
 
-            await RedisCache.AddAsync(md5CacheKey, result, DateTimeOffset.UtcNow.AddMinutes(5));
+            await RedisCache.AddAsync(md5CacheKey, result, DateTimeOffset.UtcNow.AddSeconds(10));
 
             return Mapper.Map<StatisticsGetAllResponse>(result);
         }
