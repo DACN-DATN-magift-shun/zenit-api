@@ -9,7 +9,9 @@ namespace Zenit.Management.Data.Entities
         public required int Amount { get; set; }
         public required DateTime TransactionDate { get; set; }
         public required Guid CategoryId { get; set; }
+        public required Guid WalletId { get; set; }
         public virtual Category? Category { get; set; }
+        public virtual Wallet? Wallet { get; set; }
         public required Guid AccountId { get; set; }
     }
 }
