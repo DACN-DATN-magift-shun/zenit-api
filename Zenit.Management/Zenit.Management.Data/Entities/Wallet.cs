@@ -10,5 +10,6 @@ namespace Zenit.Management.Data.Entities
         public required string Icon { get; set; }
         public string? Note { get; set; }
         public bool IsIncludeInTotalBalance { get; set; } = true;
+        public required Guid AccountId { get; set; }
     }
 }

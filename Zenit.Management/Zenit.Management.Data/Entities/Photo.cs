@@ -8,5 +8,7 @@ namespace Zenit.Management.Data.Entities
         public string? RelativePath { get; set; }
         public decimal? Size { get; set; }
         public string? ContentType { get; set; }
+        public Guid AccountId { get; set; }
+        public Guid? TransactionId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Zenit.Management.Data;
@@ -11,9 +12,11 @@ using Zenit.Management.Data;
 namespace Zenit.Management.Migrator.Migrations
 {
     [DbContext(typeof(ManagementDbContext))]
-    partial class ManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260404092037_UpdateTransferHistoryTable")]
+    partial class UpdateTransferHistoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -405,7 +408,7 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("FromWalletId")
+                    b.Property<Guid>("FromWalletId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
@@ -603,7 +606,9 @@ namespace Zenit.Management.Migrator.Migrations
                 {
                     b.HasOne("Zenit.Management.Data.Entities.Wallet", "FromWallet")
                         .WithMany()
-                        .HasForeignKey("FromWalletId");
+                        .HasForeignKey("FromWalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Zenit.Management.Data.Entities.Wallet", "ToWallet")
                         .WithMany()

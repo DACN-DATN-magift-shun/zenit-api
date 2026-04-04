@@ -1,8 +1,15 @@
-using Zenit.Management.Data.Models;
+using MediatR;
 
-namespace Zenit.Management.Data.Entities
+using Zenit.Management.Data.Entities;
+
+namespace Zenit.Management.Contract.Request.MoneyTransferRequests
 {
-    public class TransferHistory : ManagementAuditModel
+    public class GetDetailMoneyTransferRequest : IRequest<GetDetailMoneyTransferResponse>
+    {
+        public required Guid Id { get; set; }
+    }
+
+    public class GetDetailMoneyTransferResponse
     {
         public required Guid FromWalletId { get; set; }
         public required Guid ToWalletId { get; set; }
@@ -11,6 +18,5 @@ namespace Zenit.Management.Data.Entities
         public string? Note { get; set; }
         public virtual Wallet? FromWallet { get; set; }
         public virtual Wallet? ToWallet { get; set; }
-        public required Guid AccountId { get; set; }
     }
 }
