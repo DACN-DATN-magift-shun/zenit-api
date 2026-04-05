@@ -1,6 +1,6 @@
 using MediatR;
 
-using Zenit.Management.Business.Services;
+using Zenit.Management.Business.Services.WalletServices;
 using Zenit.Management.Contract.Request.WalletRequests;
 
 namespace Zenit.Management.Host.RequestHandlers

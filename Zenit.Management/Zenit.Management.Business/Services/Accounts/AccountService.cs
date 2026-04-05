@@ -13,7 +13,7 @@ using Zenit.Share.Business.Requests;
 
 
 
-namespace Zenit.Management.Business.Services
+namespace Zenit.Management.Business.Services.Accounts
 {
     public class AccountService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {

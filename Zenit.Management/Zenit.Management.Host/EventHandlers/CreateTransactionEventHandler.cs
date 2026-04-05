@@ -1,6 +1,6 @@
 using MediatR;
 
-using Zenit.Management.Business.Services;
+using Zenit.Management.Business.Services.StatisticsServices;
 using Zenit.Management.Data.Entities;
 using Zenit.Share.Common.Values;
 using Zenit.Share.Data.Events.Handlers;
