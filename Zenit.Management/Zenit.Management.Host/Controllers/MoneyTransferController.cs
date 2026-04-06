@@ -8,7 +8,7 @@ namespace Zenit.Management.Host.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class MoneyTransferController : ManagementControllerBase
+    public class MoneyTransfersController : ManagementControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateMoneyTransferRequest request)

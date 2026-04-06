@@ -1,5 +1,7 @@
 using MediatR;
 
+using Zenit.Management.Data.Entities;
+
 namespace Zenit.Management.Contract.Requests.AccountRequests
 {
     public class AccountGetDetailRequest : IRequest<AccountGetDetailResponse>
@@ -14,5 +16,7 @@ namespace Zenit.Management.Contract.Requests.AccountRequests
         public required string Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public Guid? PhotoId { get; set; }
+        public virtual Photo? Photo { get; set; }
     }
 }

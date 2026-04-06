@@ -1,5 +1,7 @@
 using MediatR;
 
+using Zenit.Management.Data.Entities;
+
 
 namespace Zenit.Management.Contract.Requests.AccountRequests
 {
@@ -7,6 +9,7 @@ namespace Zenit.Management.Contract.Requests.AccountRequests
     {
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public Guid? PhotoId { get; set; }
     }
 
     public class AccountUpdateResponse
@@ -14,5 +17,7 @@ namespace Zenit.Management.Contract.Requests.AccountRequests
         public required string Id { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public Guid? PhotoId { get; set; }
+        public virtual Photo? Photo { get; set; }
     }
 }

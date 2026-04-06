@@ -10,7 +10,7 @@ namespace Zenit.Management.Data.Entities
         public required DateTime TransactionDate { get; set; }
         public required Guid CategoryId { get; set; }
         public required Guid WalletId { get; set; }
-        public ICollection<Photo>? Photos { get; set;}
+        public virtual ICollection<Photo>? Photos { get; set;}
         public virtual Category? Category { get; set; }
         public virtual Wallet? Wallet { get; set; }
         public required Guid AccountId { get; set; }

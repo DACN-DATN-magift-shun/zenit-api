@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Zenit.Management.Data;
@@ -11,9 +12,11 @@ using Zenit.Management.Data;
 namespace Zenit.Management.Migrator.Migrations
 {
     [DbContext(typeof(ManagementDbContext))]
-    partial class ManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406104012_UpdatePhotoTableSchema")]
+    partial class UpdatePhotoTableSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,16 +123,11 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PhotoId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PhotoId");
 
                     b.ToTable("Account", "zenit_management_dev");
                 });
@@ -446,6 +444,9 @@ namespace Zenit.Management.Migrator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
 
@@ -602,15 +603,6 @@ namespace Zenit.Management.Migrator.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Wallet", "zenit_management_dev");
-                });
-
-            modelBuilder.Entity("Zenit.Management.Data.Entities.Account", b =>
-                {
-                    b.HasOne("Zenit.Management.Data.Entities.Photo", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoId");
-
-                    b.Navigation("Photo");
                 });
 
             modelBuilder.Entity("Zenit.Management.Data.Entities.MoneyTransferHistory", b =>

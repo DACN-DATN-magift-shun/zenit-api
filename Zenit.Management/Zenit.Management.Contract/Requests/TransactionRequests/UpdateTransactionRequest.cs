@@ -9,6 +9,7 @@ namespace Zenit.Management.Contract.TransactionRequests
         public string? Note { get; set; }
         public int? Amount { get; set; }
         public DateTime? TransactionDate { get; set; }
+        public Guid? WalletId { get; set; }
         public Guid? CategoryId { get; set; }
     }
 
@@ -19,6 +20,7 @@ namespace Zenit.Management.Contract.TransactionRequests
         public string? Note { get; set; }
         public required int Amount { get; set; }
         public required DateTime TransactionDate { get; set; }
+        public required Guid WalletId { get; set; }
         public required Guid CategoryId { get; set; }
     }
 }
