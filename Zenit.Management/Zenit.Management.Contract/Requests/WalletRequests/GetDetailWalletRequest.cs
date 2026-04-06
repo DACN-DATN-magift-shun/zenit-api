@@ -9,6 +9,7 @@ namespace Zenit.Management.Contract.Request.WalletRequests
 
     public class GetDetailWalletResponse
     {
+        public required Guid Id { get; set; }
         public required string Name { get; set; }
         public required int Amount { get; set; }
         public required string BackgroundColor { get; set; }

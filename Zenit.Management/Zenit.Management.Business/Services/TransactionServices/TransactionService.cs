@@ -5,14 +5,14 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using Zenit.Management.Business.Managers;
+using Zenit.Management.Business.Managers.TransactionManager;
 using Zenit.Management.Contract.TransactionRequests;
 using Zenit.Management.Data.Entities;
 using Zenit.Management.Data.Models;
 using Zenit.Share.Common.Services;
 using Zenit.Share.Contract.Models;
 
-namespace Zenit.Management.Business.Services.TransactionService
+namespace Zenit.Management.Business.Services.TransactionServices
 {
     public class TransactionService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {

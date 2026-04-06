@@ -8,6 +8,8 @@ namespace Zenit.Management.Data.Entities
         public required string Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public Guid? PhotoId { get; set; }
+        public virtual Photo? Photo { get; set; }
         public required string Password { get; set; }
     }
 }

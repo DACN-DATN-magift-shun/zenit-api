@@ -11,6 +11,7 @@ namespace Zenit.Management.Contract.Request.MoneyTransferRequests
 
     public class GetDetailMoneyTransferResponse
     {
+        public required Guid Id { get; set; }
         public required Guid FromWalletId { get; set; }
         public required Guid ToWalletId { get; set; }
         public required int Amount { get; set; }

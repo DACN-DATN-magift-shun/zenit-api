@@ -1,4 +1,4 @@
-using Zenit.Management.Business.Services;
+using Zenit.Management.Business.Services.WalletServices;
 using Zenit.Management.Data.Entities;
 using Zenit.Share.Common.Values;
 using Zenit.Share.Data.Events.Handlers;

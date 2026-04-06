@@ -120,11 +120,16 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PhotoId");
 
                     b.ToTable("Account", "zenit_management_dev");
                 });
@@ -441,9 +446,6 @@ namespace Zenit.Management.Migrator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
 
@@ -462,6 +464,10 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("text");
 
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -471,9 +477,6 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("RelativePath")
-                        .HasColumnType("text");
-
                     b.Property<decimal?>("Size")
                         .HasColumnType("numeric");
 
@@ -481,6 +484,8 @@ namespace Zenit.Management.Migrator.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
 
                     b.ToTable("Photo", "zenit_management_dev");
                 });
@@ -599,6 +604,15 @@ namespace Zenit.Management.Migrator.Migrations
                     b.ToTable("Wallet", "zenit_management_dev");
                 });
 
+            modelBuilder.Entity("Zenit.Management.Data.Entities.Account", b =>
+                {
+                    b.HasOne("Zenit.Management.Data.Entities.Photo", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId");
+
+                    b.Navigation("Photo");
+                });
+
             modelBuilder.Entity("Zenit.Management.Data.Entities.MoneyTransferHistory", b =>
                 {
                     b.HasOne("Zenit.Management.Data.Entities.Wallet", "FromWallet")
@@ -614,6 +628,13 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Navigation("FromWallet");
 
                     b.Navigation("ToWallet");
+                });
+
+            modelBuilder.Entity("Zenit.Management.Data.Entities.Photo", b =>
+                {
+                    b.HasOne("Zenit.Management.Data.Entities.Transaction", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("TransactionId");
                 });
 
             modelBuilder.Entity("Zenit.Management.Data.Entities.Transaction", b =>
@@ -633,6 +654,11 @@ namespace Zenit.Management.Migrator.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("Zenit.Management.Data.Entities.Transaction", b =>
+                {
+                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

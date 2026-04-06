@@ -15,7 +15,7 @@ using Zenit.Management.Data.Entities;
 using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Values;
 
-namespace Zenit.Management.Business.Services
+namespace Zenit.Management.Business.Services.StatisticsServices
 {
     public class StatisticsService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {

@@ -1,6 +1,6 @@
 using MediatR;
 
-using Zenit.Management.Business.Services;
+using Zenit.Management.Business.Services.StatisticsServices;
 using Zenit.Management.Contract.Requests.StatisticsRequests;
 
 namespace Zenit.Management.Host.RequestHandlers

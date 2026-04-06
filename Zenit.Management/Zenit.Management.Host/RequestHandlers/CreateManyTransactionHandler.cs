@@ -1,6 +1,6 @@
 using MediatR;
 
-using Zenit.Management.Business.Services.TransactionService;
+using Zenit.Management.Business.Services.TransactionServices;
 using Zenit.Management.Contract.TransactionRequests;
 
 namespace Zenit.Management.Host.RequestHandlers

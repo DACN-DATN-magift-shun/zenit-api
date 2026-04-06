@@ -2,13 +2,13 @@ using Mapster;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Zenit.Management.Business.Managers;
+using Zenit.Management.Business.Managers.WalletManager;
 using Zenit.Management.Contract.Request.MoneyTransferRequests;
 using Zenit.Management.Data.Entities;
 using Zenit.Share.Common.Values;
 using Zenit.Share.Contract.Models;
 
-namespace Zenit.Management.Business.Services
+namespace Zenit.Management.Business.Services.WalletServices
 {
     public class MoneyTransferService(IServiceProvider serviceProvider) : ManagementApplicationService(serviceProvider)
     {
