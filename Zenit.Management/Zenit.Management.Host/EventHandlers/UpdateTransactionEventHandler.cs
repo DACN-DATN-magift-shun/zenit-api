@@ -7,11 +7,12 @@ using Zenit.Share.Data.Events.Handlers;
 
 namespace Zenit.Management.Host.EventHandlers
 {
-    public class UpdateTransactionEventHandler(StatisticsService statisticsService) : EventUpdateHandler<Transaction>
+    public class UpdateTransactionEventHandler(StatisticsService statisticsService, WalletService walletService) : EventUpdateHandler<Transaction>
     {
         public override async Task Handle(Transaction data, List<AuditDataChange>? dataChanges)
         {
             await statisticsService.HandleUpdateTransactionAsync(data, dataChanges);
+            await walletService.HandleUpdateTransactionAsync(data, dataChanges);
         }
     }
 }

@@ -116,5 +116,37 @@ namespace Zenit.Management.Business.Services
 
             await _DbContext.SaveChangesAsync();
         }
+
+        public async Task HandleCreateTransactionAsync(Transaction transaction, List<AuditDataChange> dataChanges)
+        {
+            var wallet = _WalletManager.FindBy(w => w.Id == transaction.WalletId).FirstOrDefault();
+            wallet.Amount -= transaction.Amount;
+
+            await _DbContext.SaveChangesAsync();
+        }
+
+        public async Task HandleUpdateTransactionAsync(Transaction transaction, List<AuditDataChange> dataChanges)
+        {
+            var oldWalletId = dataChanges?.FirstOrDefault(dc => dc.Field == nameof(Transaction.WalletId))?.OriginalValue as Guid?;
+            var oldWallet = oldWalletId.HasValue ? _WalletManager.FindBy(w => w.Id == oldWalletId.Value).FirstOrDefault() : transaction.Wallet;
+
+            var newWalletId = transaction.WalletId;
+            var newWallet = _WalletManager.FindBy(w => w.Id == newWalletId).FirstOrDefault();
+
+            var oldAmount = dataChanges?.FirstOrDefault(dc => dc.Field == nameof(Transaction.Amount))?.OriginalValue as int? ?? transaction.Amount;
+
+            oldWallet.Amount += oldAmount;
+            newWallet.Amount -= transaction.Amount;
+
+            await _DbContext.SaveChangesAsync();
+        }
+
+        public async Task HandleDeleteTransactionAsync(Transaction transaction, List<AuditDataChange> dataChanges)
+        {
+            var wallet = _WalletManager.FindBy(w => w.Id == transaction.WalletId).FirstOrDefault();
+            wallet.Amount += transaction.Amount;
+            await _DbContext.SaveChangesAsync();
+        }
+
     }
 }

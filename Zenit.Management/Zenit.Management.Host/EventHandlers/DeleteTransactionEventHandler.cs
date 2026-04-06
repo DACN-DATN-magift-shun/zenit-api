@@ -7,11 +7,12 @@ using Zenit.Share.Data.Events.Handlers;
 
 namespace Zenit.Management.Host.EventHandlers
 {
-    public class DeleteTransactionEventHandler(StatisticsService statisticsService) : EventDeleteHandler<Transaction>
+    public class DeleteTransactionEventHandler(StatisticsService statisticsService, WalletService walletService) : EventDeleteHandler<Transaction>
     {
         public override async Task Handle(Transaction data, List<AuditDataChange>? dataChanges)
         {
             await statisticsService.HandleDeleteTransactionAsync(data, dataChanges);
+            await walletService.HandleDeleteTransactionAsync(data, dataChanges);
         }
     }
 }
