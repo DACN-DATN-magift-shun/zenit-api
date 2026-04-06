@@ -55,7 +55,7 @@ namespace Zenit.Management.Business.Services.TransactionServices
             return Task.FromResult(Mapper.Map<GetDetailTransactionResponse>(transaction));
         }
 
-        public async Task<UpdateTransactionResponse> Create(CreateTransactionRequest request)
+        public async Task<CreateTransactionResponse> Create(CreateTransactionRequest request)
         {
 
             var transaction = Mapper.Map<Transaction>(request);
@@ -64,7 +64,7 @@ namespace Zenit.Management.Business.Services.TransactionServices
             _TransactionManager.Add(transaction);
 
             await UnitOfWork.SaveChangesAsync();
-            return Mapper.Map<UpdateTransactionResponse>(transaction);
+            return Mapper.Map<CreateTransactionResponse>(transaction);
         }
 
         public async Task<CreateManyTransactionsResponse> CreateMany(CreateManyTransactionsRequest request)

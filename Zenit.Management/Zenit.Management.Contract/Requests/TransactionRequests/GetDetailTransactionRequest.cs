@@ -19,5 +19,6 @@ namespace Zenit.Management.Contract.TransactionRequests
         public required Guid CategoryId { get; set; }
         public virtual Wallet? Wallet { get; set; }
         public virtual Category? Category { get; set; }
+        public virtual ICollection<Photo>? Photos { get; set; }
     }
 }

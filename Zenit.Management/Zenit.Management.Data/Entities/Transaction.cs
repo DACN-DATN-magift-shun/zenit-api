@@ -13,7 +13,6 @@ namespace Zenit.Management.Data.Entities
         public virtual ICollection<Photo>? Photos { get; set;}
         public virtual Category? Category { get; set; }
         public virtual Wallet? Wallet { get; set; }
-        public virtual ICollection<Photo>? Photos { get; set; }
         public required Guid AccountId { get; set; }
     }
 }

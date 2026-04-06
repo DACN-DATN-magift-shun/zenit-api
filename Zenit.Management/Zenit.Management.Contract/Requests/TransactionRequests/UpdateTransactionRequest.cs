@@ -13,7 +13,6 @@ namespace Zenit.Management.Contract.TransactionRequests
         public DateTime? TransactionDate { get; set; }
         public Guid? WalletId { get; set; }
         public Guid? CategoryId { get; set; }
-        public Guid? WalletId { get; set; }
     }
 
     public class UpdateTransactionResponse
@@ -26,7 +25,7 @@ namespace Zenit.Management.Contract.TransactionRequests
         public required Guid WalletId { get; set; }
         public required Guid CategoryId { get; set; }
         public virtual Category? Category { get; set; }
-        public required Guid WalletId { get; set; }
         public virtual Wallet? Wallet { get; set; }
+        public virtual ICollection<Photo>? Photos { get; set; }
     }
 }

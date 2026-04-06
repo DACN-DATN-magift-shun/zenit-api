@@ -5,9 +5,9 @@ using Zenit.Management.Contract.TransactionRequests;
 
 namespace Zenit.Management.Host.RequestHandlers
 {
-    public class CreateTransactionHandler(TransactionService transactionService) : IRequestHandler<CreateTransactionRequest, UpdateTransactionResponse>
+    public class CreateTransactionHandler(TransactionService transactionService) : IRequestHandler<CreateTransactionRequest, CreateTransactionResponse>
     {
-        public async Task<UpdateTransactionResponse> Handle(CreateTransactionRequest request, CancellationToken cancellationToken)
+        public async Task<CreateTransactionResponse> Handle(CreateTransactionRequest request, CancellationToken cancellationToken)
         {
             return await transactionService.Create(request);
         }

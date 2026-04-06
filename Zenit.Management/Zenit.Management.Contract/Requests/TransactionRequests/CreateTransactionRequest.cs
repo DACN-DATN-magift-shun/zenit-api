@@ -4,7 +4,7 @@ using Zenit.Management.Data.Entities;
 
 namespace Zenit.Management.Contract.TransactionRequests
 {
-    public class CreateTransactionRequest : IRequest<UpdateTransactionResponse>
+    public class CreateTransactionRequest : IRequest<CreateTransactionResponse>
     {
         public required string Title { get; set; }
         public string? Note { get; set; }
@@ -24,7 +24,7 @@ namespace Zenit.Management.Contract.TransactionRequests
         public required Guid WalletId { get; set; }
         public required Guid CategoryId { get; set; }
         public virtual Category? Category { get; set; }
-        public required Guid WalletId { get; set; }
         public virtual Wallet? Wallet { get; set; }
+        public virtual ICollection<Photo>? Photos { get; set; }
     }
 }

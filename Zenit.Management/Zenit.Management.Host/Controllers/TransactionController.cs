@@ -26,7 +26,7 @@ namespace Zenit.Management.Host.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTransactionRequest request)
         {
-            return await CreateRequest<CreateTransactionRequest, UpdateTransactionResponse>(request);
+            return await CreateRequest<CreateTransactionRequest, CreateTransactionResponse>(request);
         }
 
         [HttpPost("many")]
