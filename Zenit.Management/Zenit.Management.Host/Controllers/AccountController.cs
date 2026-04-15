@@ -23,7 +23,7 @@ namespace Zenit.Management.Host.Controllers
         }
 
         [HttpGet("me")]
-        [Authorize]
+        [Authorize(Policy = "JwtOrInternal")]
         public async Task<IActionResult> GetDetail()
         {
             var request = new AccountGetDetailRequest();
@@ -31,7 +31,7 @@ namespace Zenit.Management.Host.Controllers
         }
 
         [HttpPatch("me")]
-        [Authorize]
+        [Authorize(Policy = "JwtOrInternal")]
         public async Task<IActionResult> Update([FromBody] AccountUpdateRequest request)
         {
 
@@ -39,7 +39,7 @@ namespace Zenit.Management.Host.Controllers
         }
 
         [HttpDelete("me")]
-        [Authorize]
+        [Authorize(Policy = "JwtOrInternal")]
         public async Task<IActionResult> Delete()
         {
             var request = new AccountDeleteRequest();

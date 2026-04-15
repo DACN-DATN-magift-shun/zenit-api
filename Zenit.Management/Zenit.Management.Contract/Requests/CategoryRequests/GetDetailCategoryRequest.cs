@@ -4,13 +4,14 @@ using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Contract.Requests.CategoryRequests
 {
-    public class GetCategoryRequest : IRequest<GetCategoryResponse>
+    public class GetDetailCategoryRequest : IRequest<GetDetailCategoryResponse>
     {
         public required Guid Id { get; set; }
     }
 
-    public class GetCategoryResponse
+    public class GetDetailCategoryResponse
     {
+        public required Guid Id { get; set; }
         public required string Name { get; set; }
         public required string Icon { get; set; }
         public required string Color { get; set; }

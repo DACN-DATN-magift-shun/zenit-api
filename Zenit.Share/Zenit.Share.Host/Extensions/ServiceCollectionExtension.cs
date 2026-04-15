@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticAssets;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using Zenit.Share.Common.Constants;
 using Zenit.Share.Common.Interfaces;
 using Zenit.Share.Common.Services;
 using Zenit.Share.Data.Interfaces;
+using Zenit.Share.Host.Configurations;
 
 
 namespace Zenit.Share.Host.Extensions
@@ -108,6 +110,21 @@ namespace Zenit.Share.Host.Extensions
                         Encoding.UTF8.GetBytes(jwtSecret!)),
                     ClockSkew = TimeSpan.Zero
                 };
+            }).AddScheme<AuthenticationSchemeOptions, InternalAuthenticationHandler>(
+                "InternalAuthentication",
+                null
+            );
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("JwtOrInternal", policy =>
+                {
+                    policy.AddAuthenticationSchemes(
+                        JwtBearerDefaults.AuthenticationScheme,
+                        "InternalAuthentication"
+                    );
+                    policy.RequireAuthenticatedUser();
+                });
             });
 
             return services;
@@ -129,6 +146,14 @@ namespace Zenit.Share.Host.Extensions
                     }
                 );
 
+                // Define the BasicAuth scheme
+                s.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    Description = "Input your username and password to access this API"
+                });
+
                 s.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -138,6 +163,17 @@ namespace Zenit.Share.Host.Extensions
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
+                            }
+                        },
+                        new List<string>()
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Basic"
                             }
                         },
                         new List<string>()

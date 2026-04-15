@@ -5,7 +5,7 @@ using Zenit.Management.Contract.Requests.StatisticsRequests;
 
 namespace Zenit.Management.Host.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "JwtOrInternal")]
     [ApiController]
     [Route("[controller]")]
     public class StatisticsController : ManagementControllerBase

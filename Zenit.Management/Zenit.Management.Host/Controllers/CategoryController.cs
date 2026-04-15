@@ -6,19 +6,25 @@ using Zenit.Share.Common.Enums;
 
 namespace Zenit.Management.Host.Controller
 {
-    [Authorize]
+    [Authorize(Policy = "JwtOrInternal")]
     [ApiController]
     [Route("[controller]")]
     public class CategoriesController : ManagementControllerBase
     {
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories([FromQuery] GetAllCategoriesRequest request)
         {
-            var request = new GetCategoryRequest { Id = id };
-            return await GetRequest<GetCategoryRequest, GetCategoryResponse>(request);
+            return await GetRequest<GetAllCategoriesRequest, GetAllCategoriesResponse>(request);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetailCategory(Guid id)
+        {
+            var request = new GetDetailCategoryRequest { Id = id };
+            return await GetRequest<GetDetailCategoryRequest, GetDetailCategoryResponse>(request);
+        }
+
+        [HttpGet("groups")]
         public async Task<IActionResult> GetCategoryGroup([FromQuery] CategoryGroupType groupType)
         {
             var request = new GetCategoryGroupRequest { GroupType = groupType };

@@ -122,7 +122,7 @@ namespace Zenit.Management.Business.Services.StatisticsServices
 
             var oldCategoryId = dataChanges.FirstOrDefault(dc => dc.Field == nameof(Transaction.CategoryId))?.OriginalValue;
             var categoryService = ServiceProvider.GetService<CategoryService>();
-            var oldGroupType = categoryService.CategoryGetDetail(new GetCategoryRequest
+            var oldGroupType = categoryService.CategoryGetDetail(new GetDetailCategoryRequest
             {
                 Id = Guid.Parse(oldCategoryId.ToString())
             }).Result.GroupType;
@@ -231,7 +231,7 @@ namespace Zenit.Management.Business.Services.StatisticsServices
                 IncomeExpenseStatistics = JsonSerializer.Deserialize<IncomeExpenseStatistics>(root.GetProperty("IncomeExpenseSummary").GetRawText(), jsonOptions)
             };
 
-            string pdfReportFilePath =  ReportHelper.GeneratePdfReport(result.GroupStatistics, result.IncomeExpenseStatistics, CurrentAccount.Id);
+            string pdfReportFilePath = ReportHelper.GeneratePdfReport(result.GroupStatistics, result.IncomeExpenseStatistics, CurrentAccount.Id);
 
             var s3Client = new AmazonS3Client(RegionEndpoint.APSoutheast1);
 

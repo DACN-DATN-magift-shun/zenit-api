@@ -5,9 +5,9 @@ using Zenit.Management.Contract.Requests.CategoryRequests;
 
 namespace Zenit.Management.Host.RequestHandlers
 {
-    public class GetCategoryHandler(CategoryService categoryService) : IRequestHandler<GetCategoryRequest, GetCategoryResponse>
+    public class GetDetailCategoryHandler(CategoryService categoryService) : IRequestHandler<GetDetailCategoryRequest, GetDetailCategoryResponse>
     {
-        public async Task<GetCategoryResponse> Handle(GetCategoryRequest request, CancellationToken cancellationToken)
+        public async Task<GetDetailCategoryResponse> Handle(GetDetailCategoryRequest request, CancellationToken cancellationToken)
         {
             return await categoryService.CategoryGetDetail(request);
         }

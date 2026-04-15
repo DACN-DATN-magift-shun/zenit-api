@@ -3,6 +3,7 @@ using Mapster;
 using Zenit.Management.Business.Managers.CategoryManager;
 using Zenit.Management.Contract.Requests.CategoryRequests;
 using Zenit.Management.Data.Entities;
+using Zenit.Share.Contract.Models;
 
 namespace Zenit.Management.Business.Services.CategoryServices
 {
@@ -11,7 +12,17 @@ namespace Zenit.Management.Business.Services.CategoryServices
         private CategoryManager _CategoryManager => GetService<CategoryManager>();
         private CategorySettingsManager _CategorySettingsManager => GetService<CategorySettingsManager>();
 
-        public Task<GetCategoryResponse> CategoryGetDetail(GetCategoryRequest request)
+        public Task<GetAllCategoriesResponse> GetAllCategories(GetAllCategoriesRequest request)
+        {
+            var categoryQuery = _CategoryManager.GetAll().Where(c => 
+            c.AccountId == CurrentAccount.Id || c.AccountId == null && c.IsDeleted == false);
+
+            return Task.FromResult(Mapper.Map<GetAllCategoriesResponse>(
+                PaginationResponse<Category>.Create(categoryQuery, request)
+            ));
+        }
+
+        public Task<GetDetailCategoryResponse> CategoryGetDetail(GetDetailCategoryRequest request)
         {
             var category = _CategoryManager.FindBy(c => c.Id == request.Id && c.IsDeleted == false).FirstOrDefault();
 
@@ -22,12 +33,13 @@ namespace Zenit.Management.Business.Services.CategoryServices
 
             var categorySettings = _CategorySettingsManager.FindBy(cs => cs.CategoryId == category.Id && cs.IsDeleted == false).FirstOrDefault();
 
-            return Task.FromResult(new GetCategoryResponse
+            return Task.FromResult(new GetDetailCategoryResponse
             {
+                Id = category.Id,
                 Name = category.Name,
                 Icon = category.Icon,
                 Color = category.Color,
-                BackgroundColor =  category.BackgroundColor,
+                BackgroundColor = category.BackgroundColor,
                 ExpenseLimit = categorySettings?.ExpenseLimit,
                 ExpenseAlertThreshold = categorySettings?.ExpenseAlertThreshold,
                 GroupType = category.GroupType,
