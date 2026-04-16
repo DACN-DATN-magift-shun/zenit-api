@@ -19,5 +19,6 @@ namespace Zenit.Share.Common.Constants
         public const string S3_UPLOAD_URI = "S3_UPLOAD_URI";
         public const string SENDGRID_API_KEY = "SENDGRID_API_KEY";
         public const string RESEND_API_KEY = "RESEND_API_KEY";
+        public const string CHATBOT_BASE_URL = "CHATBOT_BASE_URL";
     }
 }

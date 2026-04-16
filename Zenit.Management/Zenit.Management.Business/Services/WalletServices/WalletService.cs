@@ -2,10 +2,12 @@ using Mapster;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using Zenit.Management.Business.Managers.CategoryManager;
 using Zenit.Management.Business.Managers.WalletManager;
 using Zenit.Management.Contract.Request.WalletRequests;
 using Zenit.Management.Data;
 using Zenit.Management.Data.Entities;
+using Zenit.Share.Common.Enums;
 using Zenit.Share.Common.Values;
 using Zenit.Share.Contract.Models;
 
@@ -120,7 +122,14 @@ namespace Zenit.Management.Business.Services.WalletServices
         public async Task HandleCreateTransactionAsync(Transaction transaction, List<AuditDataChange> dataChanges)
         {
             var wallet = _WalletManager.FindBy(w => w.Id == transaction.WalletId).FirstOrDefault();
-            wallet.Amount -= transaction.Amount;
+            if (transaction.Category!.GroupType == CategoryGroupType.Income)
+            {
+                wallet.Amount += transaction.Amount;
+            }
+            else
+            {
+                wallet.Amount -= transaction.Amount;
+            }
 
             await _DbContext.SaveChangesAsync();
         }
@@ -133,18 +142,53 @@ namespace Zenit.Management.Business.Services.WalletServices
             var newWalletId = transaction.WalletId;
             var newWallet = _WalletManager.FindBy(w => w.Id == newWalletId).FirstOrDefault();
 
+            var oldCategoryId = dataChanges?.FirstOrDefault(dc => dc.Field == nameof(Transaction.CategoryId))?.OriginalValue as Guid?;
+            var oldCategory = oldCategoryId.HasValue 
+                ? await _DbContext.Set<Category>().FindAsync(oldCategoryId.Value)
+                : transaction.Category;
+            var oldCategoryGroupType = oldCategory?.GroupType ?? transaction.Category!.GroupType;
+            var newCategoryGroupType = transaction.Category!.GroupType;
+
             var oldAmount = dataChanges?.FirstOrDefault(dc => dc.Field == nameof(Transaction.Amount))?.OriginalValue as int? ?? transaction.Amount;
 
-            oldWallet.Amount += oldAmount;
-            newWallet.Amount -= transaction.Amount;
-
+            Console.WriteLine($"Current Old Group Type: {oldCategoryGroupType}, New Group Type: {newCategoryGroupType}\n=============================================");
+            
+            if (oldCategoryGroupType == CategoryGroupType.Income && newCategoryGroupType != CategoryGroupType.Income)
+            {
+                oldWallet.Amount -= oldAmount;
+                newWallet.Amount -= transaction.Amount;
+            }
+            else if (oldCategoryGroupType != CategoryGroupType.Income && newCategoryGroupType == CategoryGroupType.Income)
+            {
+                oldWallet.Amount += oldAmount;
+                newWallet.Amount += transaction.Amount;
+            }
+            else if (oldCategoryGroupType == CategoryGroupType.Income && newCategoryGroupType == CategoryGroupType.Income)
+            {
+                oldWallet.Amount -= oldAmount;
+                newWallet.Amount += transaction.Amount;
+            }
+            else
+            {
+                oldWallet.Amount += oldAmount;
+                newWallet.Amount -= transaction.Amount;
+            }
+        
             await _DbContext.SaveChangesAsync();
         }
 
         public async Task HandleDeleteTransactionAsync(Transaction transaction, List<AuditDataChange> dataChanges)
         {
             var wallet = _WalletManager.FindBy(w => w.Id == transaction.WalletId).FirstOrDefault();
-            wallet.Amount += transaction.Amount;
+
+            if (transaction.Category!.GroupType == CategoryGroupType.Income)
+            {
+                wallet.Amount -= transaction.Amount;
+            }
+            else
+            {
+                wallet.Amount += transaction.Amount;
+            }
             await _DbContext.SaveChangesAsync();
         }
 
