@@ -7,6 +7,6 @@ namespace Zenit.Management.Business
 {
     public class ManagementApplicationService(IServiceProvider serviceProvider) : ApplicationServiceBase(serviceProvider)
     {
-        public ManagementCurrentAccount CurrentAccount => ServiceProvider.GetService<ManagementCurrentAccount>();
+        public ManagementCurrentAccount CurrentAccount => serviceProvider.GetService<ManagementCurrentAccount>();
     }
 }

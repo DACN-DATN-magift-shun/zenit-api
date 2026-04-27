@@ -67,5 +67,17 @@ namespace Zenit.Management.Host
             var response = await Mediator.Send(request);
             return Ok(response);
         }
+
+        protected async Task<IActionResult> StreamRequest<TRequest, TResponse>(TRequest request)
+            where TRequest : IRequest<TResponse>
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await Mediator.Send(request);
+            return new EmptyResult();
+        }
     }
 }

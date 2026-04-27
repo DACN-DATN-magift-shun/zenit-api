@@ -143,13 +143,24 @@ namespace Zenit.Management.Business.Services.MessageServices
 
                     if (suggestionsArray != null)
                     {
-                        return suggestionsArray.AsArray()
+                        var sseService = GetService<ManagementSseService>();
+                        var suggestions = suggestionsArray.AsArray()
                             .Select(item => new Dictionary<string, object>
                             {
                                 { "category", item["category"]?.ToString() ?? string.Empty },
                                 { "wallet", item["wallet"]?.ToString() ?? string.Empty }
                             })
                             .ToList();
+                        
+                        await sseService.SendAsync(CurrentAccount.Id, new
+                            {
+                                chatbotMessage = chatbotResponse["response"]?.ToString() ?? string.Empty,
+                                suggestions = suggestions,
+                                conversationId = message.ConversationId,
+                            }
+                        );
+
+                        return suggestions;
                     }
                 }
                 return new List<Dictionary<string, object>>();

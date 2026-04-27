@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE Test</title>
+</head>
+<body>
+    <h1>SSE Connection Test</h1>
+    <div id="logs" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; font-family: monospace;"></div>
+
+    <script>
+        async function initSSE() {
+            const token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxOWQ4NWFkLTA3MDctN2U5Zi05YjdjLTdmMTA5ZTAyY2UzZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJzdHJpbmciLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzdHJpbmciLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9tb2JpbGVwaG9uZSI6InN0cmluZyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3N0cmVldGFkZHJlc3MiOiJzdHJpbmciLCJuYmYiOjE3NzcxOTIwMDcsImV4cCI6MTc3Nzc5NjgwN30.EYQ1jOfxOKtyhTzKgOmg52Zm_zGTlPleVGPj6eM8API';
+            const conversationId = '173435f6-1f4c-41ee-b52f-2be666ce2e3a';
+            const url = `http://localhost:5212/Messages/stream?conversationId=${conversationId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'text/event-stream',
+                        'Cache-Control': 'no-cache',
+                    },
+                });
+
+                if (!response.ok) {
+                    console.log('✗ HTTP error: ' + response.status);
+                    return;
+                }
+
+                console.log('✓ SSE Connection established');
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        log('✓ Stream closed');
+                        break;
+                    }
+
+                    const chunk = decoder.decode(value, { stream: true });
+
+                    // SSE format: "data: {...}\n\n"
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.replace('data: ', '').trim();
+                            if (!jsonStr) continue;
+                            try {
+                                const data = JSON.parse(jsonStr);
+                                console.log('✓ SSE Data received: ' + JSON.stringify(data));
+                            } catch (e) {
+                                console.log('✗ Error parsing data: ' + e.message);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.log('✗ Connection failed: ' + error.message);
+            }
+        }
+
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML += message + '<br>';
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        initSSE();
+    </script>
+</body>
+</html>

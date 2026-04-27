@@ -47,5 +47,11 @@ namespace Zenit.Management.Host.Controllers
             }
             return await UpdateRequest<UpdateMessageRequest, UpdateMessageResponse>(request);
         }
+
+        [HttpGet("stream")]
+        public async Task<IActionResult> StreamMessages([FromQuery] StreamMessageRequest request)
+        {
+            return await StreamRequest<StreamMessageRequest, StreamMessageResponse>(request);
+        }
     }
 }

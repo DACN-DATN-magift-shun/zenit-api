@@ -41,8 +41,8 @@
                 services.AddScoped<IUnitOfWork, ManagementUnitOfWork>();
                 services.AddMapster();
 
-                services.AddRabbitmqService();
-                services.AddRabbitmqProducerService();
+                // services.AddRabbitmqService();
+                // services.AddRabbitmqProducerService();
 
                 services.AddDapperQuery();
 
@@ -68,6 +68,8 @@
                     .AddMeter("Npgsql")    // PostgreSQL metrics
                     .AddPrometheusExporter()          // Expose /metrics endpoint
                 );
+
+                services.AddSseService();
             }
 
             public void Configure(IApplicationBuilder app)

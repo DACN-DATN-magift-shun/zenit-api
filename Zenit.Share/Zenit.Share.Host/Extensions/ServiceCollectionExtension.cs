@@ -184,41 +184,70 @@ namespace Zenit.Share.Host.Extensions
             return services;
         }
 
-        public static IServiceCollection AddRabbitmqService(this IServiceCollection services)
+        public static IServiceCollection AddSseService(this IServiceCollection services)
         {
-            var connectionFactory = new ConnectionFactory
+            var appName = Environment.GetEnvironmentVariable(EnvConstants.APP_NAME) ??
+                throw new Exception("App name is not set.");
+
+            var assemblies = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(a => a.GetReferencedAssemblies())
+                .Where(a => a.FullName?.StartsWith(appName) ?? false)
+                .DistinctBy(a => a.FullName)
+                .Select(Assembly.Load);
+
+            var types = assemblies.SelectMany(t => t.GetExportedTypes());
+
+            var applicationServices = types
+                .Where(t => t.IsAssignableTo(typeof(ISseService)) && !t.IsInterface && !t.IsAbstract)
+                .ToList();
+
+            foreach (var applicationService in applicationServices)
             {
-                HostName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_HOST) ?? "localhost",
-                UserName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_USERNAME) ?? "guest",
-                Password = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PASSWORD) ?? "guest",
-                Port = int.Parse(Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PORT) ?? "5672"),
-
-                RequestedHeartbeat = TimeSpan.FromSeconds(60),
-                AutomaticRecoveryEnabled = true,
-                NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
-                RequestedConnectionTimeout = TimeSpan.FromSeconds(60)
-            };
-
-            services.AddSingleton<IConnectionFactory>(connectionFactory);
-            services.AddSingleton<IConnection>(sp =>
-            {
-                var factory = sp.GetRequiredService<IConnectionFactory>();
-                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            });
+                services.AddSingleton(applicationService);
+            }
 
             return services;
+
+            // services.AddServicesWithAssignedInterface<ISseService>();
+            // return services;
         }
 
-        public static IServiceCollection AddRabbitmqProducerService(this IServiceCollection services)
-        {
-            services.AddScoped<RabbitmqProducerService>();
-            return services;
-        }
+        // public static IServiceCollection AddRabbitmqService(this IServiceCollection services)
+        // {
+        //     var connectionFactory = new ConnectionFactory
+        //     {
+        //         HostName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_HOST) ?? "localhost",
+        //         UserName = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_USERNAME) ?? "guest",
+        //         Password = Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PASSWORD) ?? "guest",
+        //         Port = int.Parse(Environment.GetEnvironmentVariable(EnvConstants.RABBITMQ_PORT) ?? "5672"),
 
-        public static IServiceCollection AddRabbitmqConsumerService(this IServiceCollection services)
-        {
-            services.AddSingleton<RabbitmqConsumerService>();
-            return services;
-        }
+        //         RequestedHeartbeat = TimeSpan.FromSeconds(60),
+        //         AutomaticRecoveryEnabled = true,
+        //         NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
+        //         RequestedConnectionTimeout = TimeSpan.FromSeconds(60)
+        //     };
+
+        //     services.AddSingleton<IConnectionFactory>(connectionFactory);
+        //     services.AddSingleton<IConnection>(sp =>
+        //     {
+        //         var factory = sp.GetRequiredService<IConnectionFactory>();
+        //         return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        //     });
+
+        //     return services;
+        // }
+
+        // public static IServiceCollection AddRabbitmqProducerService(this IServiceCollection services)
+        // {
+        //     services.AddScoped<RabbitmqProducerService>();
+        //     return services;
+        // }
+
+        // public static IServiceCollection AddRabbitmqConsumerService(this IServiceCollection services)
+        // {
+        //     services.AddSingleton<RabbitmqConsumerService>();
+        //     return services;
+        // }
     }
 }
