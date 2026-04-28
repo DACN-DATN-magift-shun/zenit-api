@@ -156,6 +156,7 @@ namespace Zenit.Management.Business.Services.MessageServices
                             {
                                 chatbotMessage = chatbotResponse["response"]?.ToString() ?? string.Empty,
                                 suggestions = suggestions,
+                                displayAcceptButton = chatbotResponse["display_accept_button"]?.GetValue<bool>() ?? false,
                                 conversationId = message.ConversationId,
                             }
                         );
