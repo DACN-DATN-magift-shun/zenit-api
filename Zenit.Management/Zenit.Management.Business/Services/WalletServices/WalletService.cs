@@ -35,7 +35,7 @@ namespace Zenit.Management.Business.Services.WalletServices
             
             if (!string.IsNullOrEmpty(request.Search))
             {
-                walletsQuery = walletsQuery.Where(w => w.Name.Contains(request.Search));
+                walletsQuery = walletsQuery.Where(w => w.Name.ToLower().Contains(request.Search.ToLower()));
             }
 
             return Task.FromResult(Mapper.Map<GetAllWalletResponse>(

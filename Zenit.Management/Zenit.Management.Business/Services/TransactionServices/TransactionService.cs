@@ -28,8 +28,8 @@ namespace Zenit.Management.Business.Services.TransactionServices
             if (!string.IsNullOrEmpty(request.Search))
             {
                 transactionsQuery = transactionsQuery
-                    .Where(t => t.Title.Contains(request.Search))
-                    .Where(t => t.Note != null && t.Note.Contains(request.Search));
+                    .Where(t => t.Title.ToLower().Contains(request.Search.ToLower()) 
+                                || (t.Note != null && t.Note.ToLower().Contains(request.Search.ToLower())));
             }
 
             if (request.FromDate.HasValue && request.ToDate.HasValue)

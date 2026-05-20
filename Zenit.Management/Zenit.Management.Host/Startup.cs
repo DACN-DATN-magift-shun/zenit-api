@@ -52,8 +52,8 @@
                     options.Configuration = Environment.GetEnvironmentVariable(EnvConstants.REDIS_CACHE_CONNECTION);
                 });
                 services.AddCacheService();
-                // services.AddSendGrid();
-                services.AddResend();
+                services.AddSendGrid();
+                // services.AddResend();
                 services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource
                     .AddService(
