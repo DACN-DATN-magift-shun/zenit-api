@@ -1,6 +1,7 @@
 using Mapster;
 
 using Zenit.Management.Business.Managers.LoanManager;
+using Zenit.Management.Common.Enums;
 using Zenit.Management.Contract.Requests.LoanRequests;
 using Zenit.Management.Data.Entities;
 using Zenit.Share.Contract.Models;
@@ -16,6 +17,7 @@ namespace Zenit.Management.Business.Services.LoanServices
             var loan = Mapper.Map<Loan>(request);
             loan.Id = Guid.NewGuid();
             loan.AccountId = CurrentAccount.Id;
+            loan.Status = LoanStatus.Ongoing;
 
             _LoanManager.Add(loan);
             await UnitOfWork.SaveChangesAsync();
@@ -30,6 +32,7 @@ namespace Zenit.Management.Business.Services.LoanServices
             {
                 loan.Id = Guid.NewGuid();
                 loan.AccountId = CurrentAccount.Id;
+                loan.Status = LoanStatus.Ongoing;
             });
 
             _LoanManager.AddRange(loans);

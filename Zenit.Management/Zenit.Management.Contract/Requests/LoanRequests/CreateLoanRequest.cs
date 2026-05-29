@@ -23,6 +23,7 @@ namespace Zenit.Management.Contract.Requests.LoanRequests
         public required int Amount { get; set; }
         public required DateTime Date { get; set; }
         public required DateTime DueDate { get; set; }
+        public required LoanStatus Status { get; set; }
         public string? Note { get; set; }
     }
 }

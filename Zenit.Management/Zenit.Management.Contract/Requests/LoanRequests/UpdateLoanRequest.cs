@@ -14,6 +14,7 @@ namespace Zenit.Management.Contract.Requests.LoanRequests
         public DateTime? DueDate { get; set; }
         public string? Note { get; set; }
         public LoanType? Type { get; set; }
+        public LoanStatus? Status { get; set; }
     }
 
     public class UpdateLoanResponse
@@ -25,5 +26,6 @@ namespace Zenit.Management.Contract.Requests.LoanRequests
         public required DateTime DueDate { get; set; }
         public string? Note { get; set; }
         public LoanType? Type { get; set; }
+        public LoanStatus? Status { get; set; }
     }
 }
