@@ -1,3 +1,5 @@
+using Mapster;
+
 using Zenit.Management.Business.Managers.LoanManager;
 using Zenit.Management.Contract.Requests.LoanRequests;
 using Zenit.Management.Data.Entities;
@@ -59,8 +61,7 @@ namespace Zenit.Management.Business.Services.LoanServices
                 throw new Exception("Loan not found");
             }
 
-            Mapper.Map(request, loan);
-            _LoanManager.Update(loan);
+            request.Adapt(loan);
             await UnitOfWork.SaveChangesAsync();
 
             return Mapper.Map<UpdateLoanResponse>(loan);

@@ -10,6 +10,12 @@ namespace Zenit.Management.Host.Controllers
     [Route("[controller]")]
     public class AccountsController : ManagementControllerBase
     {
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] AccountIsEmailExistRequest request)
+        {
+            return await CreateRequest<AccountIsEmailExistRequest, AccountIsEmailExistResponse>(request);
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] AccountCreateRequest request)
         {

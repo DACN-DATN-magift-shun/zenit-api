@@ -551,8 +551,8 @@ namespace Zenit.Management.Business.Helpers
                 ),
                 IncomeExpenseStats AS (
                     SELECT
-                        COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
-                        COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
+                        COALESCE(SUM(CASE WHEN ""GroupType"" = 5 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
+                        COALESCE(SUM(CASE WHEN ""GroupType"" != 5 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
                     FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@FromDate) 
                         AND DATE(""Date"") <= DATE(@ToDate) 
@@ -560,8 +560,8 @@ namespace Zenit.Management.Business.Helpers
                 ),
                 PreviousIncomeExpenseStats AS (
                     SELECT
-                        COALESCE(SUM(CASE WHEN ""GroupType"" = 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
-                        COALESCE(SUM(CASE WHEN ""GroupType"" != 4 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
+                        COALESCE(SUM(CASE WHEN ""GroupType"" = 5 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalIncome,
+                        COALESCE(SUM(CASE WHEN ""GroupType"" != 5 THEN ""TotalAmount"" ELSE 0 END), 0) AS TotalExpense
                     FROM zenit_management_dev.""CategoryGroupDailyStatistics""
                     WHERE DATE(""Date"") >= DATE(@PreviousFromDate) 
                         AND DATE(""Date"") <= DATE(@PreviousToDate) 

@@ -78,6 +78,12 @@ namespace Zenit.Management.Business.Services.Accounts
             return Mapper.Map<AccountLoginResponse>(tokens);
         }
 
+        public async Task<AccountIsEmailExistResponse> VerifyEmailExistance(AccountIsEmailExistRequest request)
+        {
+            var isExist = _AccountManager.GetAll().FirstOrDefault(current => current.Email == request.Email && !current.IsDeleted) != null;
+            return new AccountIsEmailExistResponse { Result = isExist };
+        }
+
         public async Task<AccountSendOTPResponse> SendOTP(AccountSendOTPRequest request)
         {
             var From = EmailServiceConstants.FROM_EMAIL;
